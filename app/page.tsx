@@ -14,7 +14,7 @@ export default function Home() {
             className="drop-shadow-md"
           />
         </div>
-        <h1 className="text-3xl font-bold mb-2 text-gray-800">MEDI MATCH</h1>
+        <h1 className="text-3xl font-bold mb-2 text-primary">MEDI MATCH</h1>
         <p className="text-gray-500 mb-10">
           필요한 약을 빠르고 쉽게 찾아보세요
         </p>
