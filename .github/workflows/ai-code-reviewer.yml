@@ -37,7 +37,7 @@ jobs:
           GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           AI_API_KEY: ${{ secrets.AI_API_KEY }}
-          AI_MODEL: "gemini-2.5-pro-exp-03-25" # Example: "gemini-2.0-pro-exp-02-05"
-          AI_MODEL_PROVIDER: "gemini" # Check the README for available AI service providers
+          AI_MODEL: "deepseek/deepseek-chat-v3-0324:free" # Example: "gemini-2.0-pro-exp-02-05"
+          AI_MODEL_PROVIDER: "openRouter" # Check the README for available AI service providers
           REVIEW_FEEDBACK_LANGUAGE: "한국어" # Set the language for review feedback
         run: node index.js
