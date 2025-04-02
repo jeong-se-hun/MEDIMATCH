@@ -66,6 +66,7 @@ export default function SearchInputGroup({
           type="text"
           name="query"
           defaultValue={defaultQuery}
+          required
           placeholder="검색어를 입력하세요"
           className={twMerge(BASE_INPUT_CLASSES, inputClassName)}
         />
