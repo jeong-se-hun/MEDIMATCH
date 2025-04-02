@@ -40,9 +40,9 @@ export default function SearchInputGroup({
           <input
             type="radio"
             name="searchType"
-            value="medicine"
+            value={SearchType.MEDICINE}
             className="sr-only peer"
-            defaultChecked={defaultSearchType === "medicine"}
+            defaultChecked={defaultSearchType === SearchType.MEDICINE}
           />
 
           <span className="block w-full py-2 px-3 rounded-md cursor-pointer transition-all peer-checked:bg-white peer-checked:text-primary peer-checked:shadow-sm">
@@ -54,9 +54,9 @@ export default function SearchInputGroup({
           <input
             type="radio"
             name="searchType"
-            value="symptom"
+            value={SearchType.SYMPTOM}
             className="sr-only peer"
-            defaultChecked={defaultSearchType === "symptom"}
+            defaultChecked={defaultSearchType === SearchType.SYMPTOM}
           />
 
           <span className="block w-full py-2 px-3 rounded-md cursor-pointer transition-all peer-checked:bg-white peer-checked:text-primary peer-checked:shadow-sm">
