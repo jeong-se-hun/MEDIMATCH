@@ -1,8 +1,13 @@
 import { twMerge } from "tailwind-merge"; //
 
+export enum SearchType {
+  MEDICINE = "medicine",
+  SYMPTOM = "symptom",
+}
+
 type SearchInputGroupProps = {
   // 라디오 버튼 초기 선택값 ('medicine' 또는 'symptom')
-  defaultSearchType?: "medicine" | "symptom";
+  defaultSearchType?: SearchType;
   // 검색어 입력창 초기값
   defaultQuery?: string;
   // 검색어 입력창에 적용할 추가/변경 Tailwind 클래스 (선택 사항)
@@ -17,7 +22,7 @@ const BASE_INPUT_CLASSES =
 const BASE_RADIO_CONTAINER_CLASSES = "flex mb-4 bg-gray-100 p-1 rounded-lg";
 
 export default function SearchInputGroup({
-  defaultSearchType = "medicine",
+  defaultSearchType = SearchType.MEDICINE,
   defaultQuery = "",
   inputClassName,
   radioContainerClassName,

@@ -6,8 +6,14 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-b from-white to-gray-100">
       <div className="w-full max-w-md mx-auto text-center">
-        <div className="relative mb-6 w-18 h-18 mx-auto">
-          <Image src="/images/logo.png" alt="logo image" fill priority />
+        <div className="flex justify-center mb-6">
+          <Image
+            src="/images/logo.png"
+            alt="logo image"
+            width={70}
+            height={70}
+            priority
+          />
         </div>
         <h1 className="text-3xl font-bold mb-2 text-gray-800">MEDI MATCH</h1>
         <p className="text-gray-500 mb-10">
