@@ -1,6 +1,5 @@
 import Image from "next/image";
-import Form from "next/form";
-import SearchInputGroup from "@/components/SearchInputGroup";
+import SearchForm, { SearchType } from "@/components/SearchForm";
 
 export default function Home() {
   return (
@@ -19,19 +18,8 @@ export default function Home() {
         <p className="text-gray-500 mb-10">
           필요한 약을 빠르고 쉽게 찾아보세요
         </p>
-
-        <Form action="/search" className="flex flex-col gap-6">
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <SearchInputGroup
-              radioContainerClassName="mb-6"
-              inputClassName="py-4"
-            />
-          </div>
-
-          <button className="w-full cursor-pointer bg-primary text-white py-4 rounded-xl font-medium hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md">
-            검색하기
-          </button>
-        </Form>
+        {/* 검색 폼 */}
+        <SearchForm defaultSearchType={SearchType.MEDICINE} />
       </div>
     </main>
   );
