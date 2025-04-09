@@ -1,5 +1,4 @@
 "use client";
-
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import Link from "next/link";
@@ -7,6 +6,9 @@ import { MedicineResponse } from "@/types/medicine";
 import { getMedicineList } from "@/lib/api/medicineApi";
 import { SearchParams } from "@/app/search/page";
 import Image from "next/image";
+
+const STALE_TIME = 86_400_000;
+const GC_TIME = 172_800_000;
 
 type MedicineListType = SearchParams & {
   initialData?: MedicineResponse;
@@ -37,15 +39,39 @@ export default function MedicineList({
       const totalPages = Math.ceil(totalItems / itemsPerPage);
       return currentPage < totalPages ? currentPage + 1 : undefined;
     },
+
     initialData: { pages: [initialData], pageParams: [1] },
+    staleTime: STALE_TIME,
+    gcTime: GC_TIME,
   });
+
+  const observerEl = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!hasNextPage || isFetchingNextPage) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        fetchNextPage();
+      }
+    });
+
+    if (observerEl.current) {
+      observer.observe(observerEl.current);
+    }
+
+    return () => {
+      if (observerEl.current) {
+        observer.disconnect();
+      }
+    };
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   return (
     <div className="divide-y divide-gray-100">
-      {data?.pages.map((page) =>
+      {data?.pages.map((page, pageIndex) =>
         page?.body.items?.map((medicine) => (
           <Link
-            key={medicine.itemName}
+            key={medicine.itemName + pageIndex}
             href={`/medicine/${medicine.itemName}`}
             className="block hover:bg-gray-50 transition-colors"
           >
@@ -66,16 +92,21 @@ export default function MedicineList({
                   {medicine.itemName}
                 </h2>
                 <p className="text-sm text-gray-500">{medicine.entpName}</p>
-
                 <div className="mt-2 text-sm text-gray-700 line-clamp-2">
                   {medicine.efcyQesitm}
                 </div>
-
                 <div className="mt-3 flex flex-wrap gap-1"></div>
               </div>
             </div>
           </Link>
         ))
+      )}
+
+      {/* 무한 스크롤 트리거 엘리먼트 */}
+      {hasNextPage && (
+        <div ref={observerEl} className="py-4 text-center text-gray-500">
+          {isFetchingNextPage && "Loading more..."}
+        </div>
       )}
     </div>
   );
