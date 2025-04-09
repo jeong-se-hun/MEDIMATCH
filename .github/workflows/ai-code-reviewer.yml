@@ -16,15 +16,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Current Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "18"
 
       - name: Checkout AI Code Review
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: jeong-se-hun/AICodeReviewer
 
@@ -36,6 +36,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_EVENT_ACTION: ${{ github.event.action }}
+          COMMIT_BEFORE: ${{ github.event.before }}
+          COMMIT_AFTER: ${{ github.event.after }}
           AI_API_KEY: ${{ secrets.AI_API_KEY }}
           AI_MODEL: "deepseek/deepseek-chat-v3-0324:free" # Example: "gemini-2.0-pro-exp-02-05"
           AI_MODEL_PROVIDER: "openRouter" # Check the README for available AI service providers
