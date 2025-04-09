@@ -1,11 +1,12 @@
 "use client";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import { MedicineResponse } from "@/types/medicine";
 import { getMedicineList } from "@/lib/api/medicineApi";
 import { SearchParams } from "@/app/search/page";
 import Image from "next/image";
+import { useInView } from "react-intersection-observer";
 
 const STALE_TIME = 86_400_000;
 const GC_TIME = 172_800_000;
@@ -44,27 +45,11 @@ export default function MedicineList({
     staleTime: STALE_TIME,
     gcTime: GC_TIME,
   });
-
-  const observerEl = useRef<HTMLDivElement>(null);
+  const { ref: inViewRef, inView } = useInView();
 
   useEffect(() => {
-    if (!hasNextPage || isFetchingNextPage) return;
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        fetchNextPage();
-      }
-    });
-
-    if (observerEl.current) {
-      observer.observe(observerEl.current);
-    }
-
-    return () => {
-      if (observerEl.current) {
-        observer.disconnect();
-      }
-    };
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+    if (inView) fetchNextPage();
+  }, [inView]);
 
   return (
     <div className="divide-y divide-gray-100">
@@ -104,7 +89,7 @@ export default function MedicineList({
 
       {/* 무한 스크롤 트리거 엘리먼트 */}
       {hasNextPage && (
-        <div ref={observerEl} className="py-4 text-center text-gray-500">
+        <div ref={inViewRef} className="py-4 text-center text-gray-500">
           {isFetchingNextPage && "Loading more..."}
         </div>
       )}
