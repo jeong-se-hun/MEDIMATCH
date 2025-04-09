@@ -3,7 +3,11 @@ import fetchClient from "./api";
 import { SearchParams } from "@/app/search/page";
 import { MedicineResponse } from "@/types/medicine";
 
-const SERVICE_KEY = process.env.API_KEY;
+type MedicineParams = SearchParams & {
+  pageNo?: number;
+};
+
+const SERVICE_KEY = process.env.NEXT_PUBLIC_API_KEY;
 if (!SERVICE_KEY) {
   throw new Error("API_KEY 환경 변수가 설정되지 않았습니다.");
 }
@@ -17,12 +21,14 @@ const MEDICINE_INFO_URL =
  * 의약품 정보 조회
  * @param query 검색어
  * @param searchType 검색 타입
+ * @param pageNo 페이지 번호 (기본값: 1)
  */
 export const getMedicineList = async ({
   query,
   searchType,
-}: SearchParams): Promise<MedicineResponse | undefined> => {
-  if (!query) return undefined;
+  pageNo = 1,
+}: MedicineParams): Promise<MedicineResponse | undefined> => {
+  if (!query) return;
 
   const searchQuery = {
     itemName: searchType === SearchType.MEDICINE ? query : "",
@@ -31,7 +37,7 @@ export const getMedicineList = async ({
 
   const params = new URLSearchParams({
     serviceKey: SERVICE_KEY,
-    pageNo: "1",
+    pageNo: String(pageNo),
     numOfRows: "10",
     ...searchQuery,
     type: "json",

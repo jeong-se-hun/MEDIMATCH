@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import SearchForm, { SearchType } from "@/components/SearchForm";
 import { getMedicineList } from "@/lib/api/medicineApi";
+import MedicineList from "@/components/MedicineList";
 
 export type SearchParams = {
   query?: string;
@@ -15,7 +16,7 @@ export default async function Search({
   searchParams: Promise<SearchParams>;
 }) {
   const { query, searchType } = await searchParams;
-  const medicineList = await getMedicineList({ query, searchType });
+  const initialMedicineList = await getMedicineList({ query, searchType });
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-white to-gray-100 p-4 md:p-6">
@@ -55,15 +56,19 @@ export default async function Search({
               )}
               검색 결과
             </h1>
-            {typeof medicineList?.body?.totalCount === "number" && (
+            {typeof initialMedicineList?.body?.totalCount === "number" && (
               <p className="text-sm font-medium text-gray-600 bg-gray-100 rounded-full px-3 py-1">
-                총 {medicineList?.body.totalCount}개
+                총 {initialMedicineList?.body.totalCount}개
               </p>
             )}
           </div>
 
           {/* 검색 결과 리스트 */}
-          <div className="divide-y divide-gray-100"></div>
+          <MedicineList
+            initialData={initialMedicineList}
+            query={query}
+            searchType={searchType}
+          />
         </div>
       </div>
     </main>
