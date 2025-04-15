@@ -16,7 +16,6 @@ export default async function fetchClient<T>(url: string): Promise<T> {
 
     return response.json();
   } catch (error) {
-    console.error("네트워크 에러:", error);
     throw error;
   }
 }

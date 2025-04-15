@@ -10,7 +10,7 @@ type ErrorPopupType = {
 
 export default function ErrorPopup({
   error,
-  errorMessage = "오류가 발생했습니다 다시 시도해주세요.",
+  errorMessage = "오류가 발생했습니다 잠시 후 다시 시도해주세요.",
   onClose,
 }: ErrorPopupType) {
   const [isOpen, setIsOpen] = useState(false);
