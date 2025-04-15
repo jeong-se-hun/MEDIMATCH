@@ -7,6 +7,7 @@ import { getMedicineList } from "@/lib/api/medicineApi";
 import { SearchParams } from "@/app/search/page";
 import Image from "next/image";
 import { useInView } from "react-intersection-observer";
+import ErrorPopup from "./ErrorPopup";
 
 const STALE_TIME = 86_400_000;
 const GC_TIME = 172_800_000;
@@ -45,53 +46,45 @@ export default function MedicineList({
     if (inView) fetchNextPage();
   }, [inView]);
 
-  const medicineItems =
-    data?.pages.flatMap((page) => page?.body.items ?? []) ?? [];
-
-  if (medicineItems.length === 0) {
-    return (
-      <div className="py-12 px-6 max-w-md mx-auto text-center">
-        <h2 className="text-xl font-bold text-gray-800 mb-3">
-          "{query}" {searchType === "medicine" ? "약 이름" : "증상"} 검색 결과가
-          없습니다
-        </h2>
-      </div>
-    );
+  if (error) {
+    return <ErrorPopup error={error} />;
   }
 
   return (
     <div className="divide-y divide-gray-100">
-      {medicineItems.map((medicine) => (
-        <Link
-          key={medicine.itemName}
-          href={`/medicine/${medicine.itemName}`}
-          className="block hover:bg-gray-50 transition-colors"
-        >
-          <div className="p-6 flex items-center">
-            <div className="flex-shrink-0 mr-5">
-              <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
-                <Image
-                  src={medicine.itemImage || "/images/no-medicine-icon.png"}
-                  alt={medicine.itemName}
-                  width={90}
-                  height={70}
-                  className="rounded-lg w-[90px] h-[70px] object-center"
-                />
+      {(data?.pages.flatMap((page) => page?.body.items ?? []) ?? []).map(
+        (medicine) => (
+          <Link
+            key={medicine.itemName}
+            href={`/medicine/${medicine.itemName}`}
+            className="block hover:bg-gray-50 transition-colors"
+          >
+            <div className="p-6 flex items-center">
+              <div className="flex-shrink-0 mr-5">
+                <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
+                  <Image
+                    src={medicine.itemImage || "/images/no-medicine-icon.png"}
+                    alt={medicine.itemName}
+                    width={90}
+                    height={70}
+                    className="rounded-lg w-[90px] h-[70px] object-center"
+                  />
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {medicine.itemName}
+                </h2>
+                <p className="text-sm text-gray-500">{medicine.entpName}</p>
+                <div className="mt-2 text-sm text-gray-700 line-clamp-2">
+                  {medicine.efcyQesitm}
+                </div>
+                <div className="mt-3 flex flex-wrap gap-1"></div>
               </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <h2 className="text-lg font-semibold text-gray-900">
-                {medicine.itemName}
-              </h2>
-              <p className="text-sm text-gray-500">{medicine.entpName}</p>
-              <div className="mt-2 text-sm text-gray-700 line-clamp-2">
-                {medicine.efcyQesitm}
-              </div>
-              <div className="mt-3 flex flex-wrap gap-1"></div>
-            </div>
-          </div>
-        </Link>
-      ))}
+          </Link>
+        )
+      )}
 
       {/* 무한 스크롤 트리거 엘리먼트 */}
       {hasNextPage && (

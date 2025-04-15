@@ -64,11 +64,20 @@ export default async function Search({
           </div>
 
           {/* 검색 결과 리스트 */}
-          <MedicineList
-            initialData={initialMedicineList}
-            query={query}
-            searchType={searchType}
-          />
+          {initialMedicineList?.body?.items?.length === 0 ? (
+            <div className="py-12 px-6 max-w-md mx-auto text-center">
+              <h2 className="text-xl font-bold text-gray-800 mb-3">
+                "{query}" {searchType === "medicine" ? "약 이름" : "증상"} 검색
+                결과가 없습니다
+              </h2>
+            </div>
+          ) : (
+            <MedicineList
+              initialData={initialMedicineList}
+              query={query}
+              searchType={searchType}
+            />
+          )}
         </div>
       </div>
     </main>
