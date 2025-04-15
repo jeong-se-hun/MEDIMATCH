@@ -1,8 +1,30 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import SearchForm, { SearchType } from "@/components/SearchForm";
+import { getMedicineList } from "@/lib/api/medicineApi";
+import MedicineList from "@/components/MedicineList";
+import ErrorPopup from "@/components/ErrorPopup";
+import { safeFetch } from "@/lib/utils/safeFetch";
 
-export default function Search() {
+export type SearchParams = {
+  query?: string;
+  searchType?: SearchType;
+};
+
+export default async function Search({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const { query, searchType } = await searchParams;
+
+  const { data: initialMedicineList, error: fetchError } = await safeFetch(() =>
+    getMedicineList({ query, searchType })
+  );
+
+  const totalCount = initialMedicineList?.body?.totalCount;
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-white to-gray-100 p-4 md:p-6">
       <div className="max-w-4xl mx-auto">
@@ -16,7 +38,7 @@ export default function Search() {
               height={40}
               className="mr-3"
             />
-            <span className="text-xl font-bold text-primary">MEDI MATCH</span>
+            <span className="text-xl font-bold text-gray-800">MEDI MATCH</span>
           </Link>
 
           <Link
@@ -29,68 +51,43 @@ export default function Search() {
         </div>
 
         {/* 검색 폼 */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
-          <form action="/search" className="flex flex-col gap-4">
-            {/* 탭 스타일의 검색 타입 선택 */}
-            <div className="flex mb-4 bg-gray-100 p-1 rounded-lg">
-              <label className="flex-1 text-center">
-                <input
-                  type="radio"
-                  name="searchType"
-                  value="medicine"
-                  className="sr-only peer"
-                  //   defaultChecked={searchType === "medicine"}
-                />
-                <span className="block w-full py-2 px-3 rounded-md cursor-pointer transition-all peer-checked:bg-white peer-checked:text-primary peer-checked:shadow-sm">
-                  약 이름
-                </span>
-              </label>
-              <label className="flex-1 text-center">
-                <input
-                  type="radio"
-                  name="searchType"
-                  value="symptom"
-                  className="sr-only peer"
-                  //   defaultChecked={searchType === "symptom"}
-                />
-                <span className="block w-full py-2 px-3 rounded-md cursor-pointer transition-all peer-checked:bg-white peer-checked:text-primary peer-checked:shadow-sm">
-                  증상
-                </span>
-              </label>
-            </div>
 
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <input
-                  type="text"
-                  name="query"
-                  //   defaultValue={query}
-                  placeholder="검색어를 입력하세요"
-                  className="w-full px-5 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
-                />
-              </div>
-              <button
-                type="submit"
-                className="bg-primary text-white px-6 py-3 rounded-xl font-medium hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md"
-              >
-                검색
-              </button>
-            </div>
-          </form>
-        </div>
+        <SearchForm defaultQuery={query} defaultSearchType={searchType} />
 
         {/* 검색 결과 */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-gray-100">
-            <h1 className="text-xl font-bold text-gray-800">검색 결과</h1>
-            {/* <p className="text-sm text-gray-500 mt-1">
-              {searchType === "medicine" ? "약 이름" : "증상"} "{query}" 검색
-              결과 {searchResults.length}개
-            </p> */}
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden mt-8">
+          <div className="px-6 py-4 bg-white shadow-sm border-b border-gray-200 flex items-center justify-between">
+            <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">
+              {query && (
+                <span className="text-primary">{`"${query.trim()}"`} </span>
+              )}
+              검색 결과
+            </h1>
+            {typeof totalCount === "number" && (
+              <p className="text-sm font-medium text-gray-600 bg-gray-100 rounded-full px-3 py-1">
+                총 {totalCount}개
+              </p>
+            )}
           </div>
 
           {/* 검색 결과 리스트 */}
-          <div className="divide-y divide-gray-100"></div>
+          {fetchError ? (
+            <ErrorPopup error={fetchError} />
+          ) : totalCount === 0 ? (
+            <div className="py-12 px-6 max-w-md mx-auto text-center">
+              <h2 className="text-xl font-bold text-gray-800 mb-3">
+                {query ? `"${query}" ` : ""}
+                {searchType === "medicine" ? "약 이름" : "증상"} 검색 결과가
+                없습니다
+              </h2>
+            </div>
+          ) : (
+            <MedicineList
+              initialData={initialMedicineList}
+              query={query}
+              searchType={searchType}
+            />
+          )}
         </div>
       </div>
     </main>
