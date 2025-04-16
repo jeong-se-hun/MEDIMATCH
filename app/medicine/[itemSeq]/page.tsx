@@ -1,14 +1,68 @@
+import type { Metadata } from "next";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { getMedicineDetailBySeq } from "@/lib/api/medicineApi";
+import { safeFetch } from "@/lib/utils/safeFetch";
 
-export default function Medicine() {
+export type MedicineParams = {
+  itemSeq: string;
+};
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<MedicineParams>;
+}): Promise<Metadata> {
+  const { itemSeq } = await params;
+  const decodeItemSeq = decodeURIComponent(itemSeq);
+  const medicine = await getMedicineDetailBySeq(decodeItemSeq);
+
+  if (!medicine) {
+    return {
+      title: "약품 정보를 찾을 수 없습니다.",
+      description: "다른 약품을 검색해보세요",
+    };
+  }
+
+  const title = `${medicine.itemName} - 상세 정보 | MEDIMATCH`;
+  const description = medicine.efcyQesitm;
+
+  const ogImages = medicine.itemImage
+    ? [medicine.itemImage]
+    : ["/images/no-medicine-icon.png"];
+
+  return {
+    title: title,
+    description: description,
+    openGraph: {
+      title: title,
+      description: description,
+      images: ogImages,
+      url: `/medicine/${itemSeq}`,
+      type: "website",
+      siteName: "MEDIMATCH",
+    },
+  };
+}
+
+export default async function Medicine({
+  params,
+}: {
+  params: Promise<MedicineParams>;
+}) {
+  const { itemSeq } = await params;
+  const decodeItemSeq = decodeURIComponent(itemSeq);
+
+  const { data: medicine, error: fetchError } = await safeFetch(() =>
+    getMedicineDetailBySeq(decodeItemSeq)
+  );
+
   return (
     <main className="min-h-screen bg-[#f8fafc]">
       <div className="bg-white shadow-lg relative overflow-hidden">
         {/* 상단 요소 */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-primary to-blue-400"></div>
-
         <div className="max-w-4xl mx-auto p-5 pt-8">
           <div className="mb-5">
             <Link
@@ -26,9 +80,9 @@ export default function Medicine() {
             </div>
             <div className="flex-1">
               <h1 className="text-2xl font-bold text-gray-900">
-                이지엔6이브연질캡슐
+                {medicine?.itemName}
               </h1>
-              <p className="text-gray-500">(주)대웅제약</p>
+              <p className="text-gray-500">{medicine?.entpName}</p>
 
               {/* 성분 및 함량 정보 추가 */}
               <div className="mt-2 flex items-center">
@@ -49,7 +103,7 @@ export default function Medicine() {
                   ].map((tab) => (
                     <button
                       key={tab}
-                      className={`px-4 py-2 rounded-lg whitespace-nowrap text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200`}
+                      className={`px-4 py-2 rounded-lg cursor-pointer whitespace-nowrap text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200`}
                     >
                       {tab}
                     </button>

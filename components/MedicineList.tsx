@@ -55,8 +55,8 @@ export default function MedicineList({
       {(data?.pages.flatMap((page) => page?.body.items ?? []) ?? []).map(
         (medicine) => (
           <Link
-            key={medicine.itemName}
-            href={`/medicine/${medicine.itemName}`}
+            key={medicine.itemSeq}
+            href={`/medicine/${medicine.itemSeq}`}
             className="block hover:bg-gray-50 transition-colors"
           >
             <div className="p-6 flex items-center">
