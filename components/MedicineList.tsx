@@ -67,7 +67,7 @@ export default function MedicineList({
                     alt={medicine.itemName}
                     width={90}
                     height={70}
-                    className="rounded-lg w-[90px] h-[70px] object-center"
+                    className="rounded-lg w-[90px] h-[70px]"
                   />
                 </div>
               </div>

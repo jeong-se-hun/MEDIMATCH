@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getMedicineDetailBySeq } from "@/lib/api/medicineApi";
 import { safeFetch } from "@/lib/utils/safeFetch";
+import MedicineInfoTabs from "@/components/MedicineInfoTabs";
 
 export type MedicineParams = {
   itemSeq: string;
@@ -65,6 +66,7 @@ export default async function Medicine({
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-primary to-blue-400"></div>
         <div className="max-w-4xl mx-auto p-5 pt-8">
           <div className="mb-5">
+            {/* TODO 뒤로 가기로 수정 필요 */}
             <Link
               href="/search"
               className="flex items-center text-gray-500 hover:text-primary transition-colors"
@@ -76,7 +78,16 @@ export default async function Medicine({
 
           <div className="flex flex-col md:flex-row gap-8">
             <div className="flex-shrink-0 flex items-start justify-center">
-              <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-sm"></div>
+              <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-sm">
+                <Image
+                  src={medicine?.itemImage || "/images/no-medicine-icon.png"}
+                  alt={`${medicine?.itemName} 이미지` || "약품 이미지"}
+                  width={200}
+                  height={110}
+                  className="rounded-lg w-[200px] h-[110px]"
+                  priority
+                />
+              </div>
             </div>
             <div className="flex-1">
               <h1 className="text-2xl font-bold text-gray-900">
@@ -91,39 +102,7 @@ export default async function Medicine({
                 </span>
               </div>
 
-              <div className="mt-6 flex flex-col gap-2">
-                <div className="flex overflow-x-auto scrollbar-hide gap-1 pb-2">
-                  {[
-                    "효능효과",
-                    "용법용량",
-                    "주의사항",
-                    "상호작용",
-                    "부작용",
-                    "보관방법",
-                  ].map((tab) => (
-                    <button
-                      key={tab}
-                      className={`px-4 py-2 rounded-lg cursor-pointer whitespace-nowrap text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200`}
-                    >
-                      {tab}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="mt-2 p-4 rounded-lg bg-white border border-gray-200 shadow-sm">
-                  <div>
-                    <h2 className="text-lg font-semibold text-gray-800 mb-3">
-                      효능·효과
-                    </h2>
-                    <div className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
-                      이 약은 두통, 치통, 발치후 동통, 인후통, 귀의 통증,
-                      관절통, 신경통, 허리통, 근육통, 어깨결림, 타박통, 골절통,
-                      염좌통(삠통증), 생리통, 외상통의 진통과 오한, 발열 시의
-                      해열에 사용합니다.
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <MedicineInfoTabs medicine={medicine} />
             </div>
           </div>
         </div>
