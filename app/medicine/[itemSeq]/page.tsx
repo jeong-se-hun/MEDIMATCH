@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { getMedicineDetailBySeq } from "@/lib/api/medicineApi";
 import { safeFetch } from "@/lib/utils/safeFetch";
 import MedicineInfoTabs from "@/components/MedicineInfoTabs";
+import BackButton from "@/components/BackButton";
 
 export type MedicineParams = {
   itemSeq: string;
@@ -66,14 +67,7 @@ export default async function Medicine({
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-primary to-blue-400"></div>
         <div className="max-w-4xl mx-auto p-5 pt-8">
           <div className="mb-5">
-            {/* TODO 뒤로 가기로 수정 필요 */}
-            <Link
-              href="/search"
-              className="flex items-center text-gray-500 hover:text-primary transition-colors"
-            >
-              <ArrowLeft className="h-4 w-4 mr-1" />
-              <span>검색 결과로 돌아가기</span>
-            </Link>
+            <BackButton label="검색 결과로 돌아가기" />
           </div>
 
           <div className="flex flex-col md:flex-row gap-8">
