@@ -1,4 +1,4 @@
-import { SearchType } from "@/components/SearchForm";
+import { SearchType } from "@/components/search/SearchForm";
 import fetchClient from "./api";
 import { SearchParams } from "@/app/search/page";
 import {
@@ -136,6 +136,7 @@ export async function getMedicineIngredient(
       `${INGREDIENT_INFO_URL}?${params.toString()}`
     );
 
+    // TODO 추후 제거 필요
     console.log(response, "response");
     console.log(response.body.items, "items");
 

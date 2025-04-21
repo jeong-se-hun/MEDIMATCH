@@ -1,5 +1,5 @@
 import Image from "next/image";
-import SearchForm, { SearchType } from "@/components/SearchForm";
+import SearchForm, { SearchType } from "@/components/search/SearchForm";
 
 export default function Home() {
   return (

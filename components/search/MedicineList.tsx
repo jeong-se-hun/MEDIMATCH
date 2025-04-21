@@ -7,7 +7,7 @@ import { getMedicineList } from "@/lib/api/medicineApi";
 import { SearchParams } from "@/app/search/page";
 import Image from "next/image";
 import { useInView } from "react-intersection-observer";
-import ErrorPopup from "./ErrorPopup";
+import ErrorPopup from "../common/ErrorPopup";
 
 const STALE_TIME = 86_400_000;
 const GC_TIME = 172_800_000;

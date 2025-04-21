@@ -5,11 +5,13 @@ import Image from "next/image";
 import {
   getMedicineDetailBySeq,
   getMedicineIngredient,
+  getMedicineList,
 } from "@/lib/api/medicineApi";
 import { safeFetch } from "@/lib/utils/safeFetch";
-import MedicineInfoTabs from "@/components/MedicineInfoTabs";
-import BackButton from "@/components/BackButton";
-import ErrorPopup from "@/components/ErrorPopup";
+import MedicineInfoTabs from "@/components/medicine/MedicineInfoTabs";
+import BackButton from "@/components/common/BackButton";
+import ErrorPopup from "@/components/common/ErrorPopup";
+import { SearchType } from "@/components/search/SearchForm";
 
 export type MedicineParams = {
   itemSeq: string;
@@ -71,6 +73,12 @@ export default async function Medicine({
   const { data: ingredient, error: ingredientFetchError } = await safeFetch(
     () => getMedicineIngredient(medicine?.itemName)
   );
+  console.log(medicine);
+  //TODO 추후 제거 필요
+  const data = await getMedicineList({
+    query: medicine.efcyQesitm,
+    searchType: SearchType.SYMPTOM,
+  });
 
   return (
     <main className="min-h-screen bg-[#f8fafc]">
@@ -104,7 +112,7 @@ export default async function Medicine({
               {/* 성분 및 함량 정보 추가 */}
               <div className="mt-2 flex items-center">
                 <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                  이부프로펜 200mg
+                  {ingredient?.MTRAL_NM}
                 </span>
               </div>
 

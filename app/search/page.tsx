@@ -1,10 +1,10 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import SearchForm, { SearchType } from "@/components/SearchForm";
+import SearchForm, { SearchType } from "@/components/search/SearchForm";
 import { getMedicineList } from "@/lib/api/medicineApi";
-import MedicineList from "@/components/MedicineList";
-import ErrorPopup from "@/components/ErrorPopup";
+import MedicineList from "@/components/search/MedicineList";
+import ErrorPopup from "@/components/common/ErrorPopup";
 import { safeFetch } from "@/lib/utils/safeFetch";
 
 export type SearchParams = {
