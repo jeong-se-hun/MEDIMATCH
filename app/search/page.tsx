@@ -82,11 +82,13 @@ export default async function Search({
               </h2>
             </div>
           ) : (
-            <MedicineList
-              initialData={initialMedicineList}
-              query={query}
-              searchType={searchType}
-            />
+            initialMedicineList && (
+              <MedicineList
+                initialData={initialMedicineList}
+                query={query}
+                searchType={searchType}
+              />
+            )
           )}
         </div>
       </div>

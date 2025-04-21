@@ -13,7 +13,7 @@ const STALE_TIME = 86_400_000;
 const GC_TIME = 172_800_000;
 
 type MedicineListType = SearchParams & {
-  initialData?: MedicineResponse;
+  initialData: MedicineResponse;
 };
 
 export default function MedicineList({
@@ -40,6 +40,7 @@ export default function MedicineList({
       staleTime: STALE_TIME,
       gcTime: GC_TIME,
     });
+
   const { ref: inViewRef, inView } = useInView();
 
   useEffect(() => {

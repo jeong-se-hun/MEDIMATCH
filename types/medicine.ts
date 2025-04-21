@@ -36,39 +36,24 @@ export interface MedicineResponse {
 
 // 주성분 API의 개별 항목 타입
 export interface IngredientItem {
-  BIZRNO?: string;
-  ITEM_SEQ?: string;
-  ITEM_NAME?: string;
-  ITEM_ENG_NAME?: string;
-  ENTP_NAME?: string;
-  ENTP_ENG_NAME?: string;
-  ENTP_SEQ?: string;
-  ENTP_NO?: string;
-  ITEM_PERMIT_DATE?: string;
-  INDUTY?: string;
-  PRDLST_STDR_CODE?: string;
-  SPCLTY_PBLC?: string;
-  PRDUCT_TYPE?: string;
-  PRDUCT_PRMISN_NO?: string;
-  ITEM_INGR_NAME?: string;
-  ITEM_INGR_CNT?: string;
-  BIG_PRDT_IMG_URL?: string;
-  PERMIT_KIND_CODE?: string;
-  CANCEL_DATE?: string;
-  CANCEL_NAME?: string;
-  EDI_CODE?: string;
+  ENTRPS: "string"; // 업체명
+  PRDUCT: "string"; // 제품명
+  MTRAL_CODE: "string"; // 주성분코드
+  MTRAL_NM: "string"; // 주성분명
+  QNT: "string"; // 용량
+  INGD_UNIT_CD: "string"; // 용량단위
+  ITEM_SEQ: "string"; // 품목기준코드
+  MAIN_INGR_ENG: "string"; // 주성분영문명
 }
 
 // 주성분 API 전체 응답 타입
-export interface IngredientApiResponse {
+export interface IngredientResponse {
   header: {
     resultMsg: string;
     resultCode: string;
   };
   body: {
-    items: {
-      item: IngredientItem;
-    };
+    items: IngredientItem[];
     pageNo: number;
     numOfRows: number;
     totalCount: number;
