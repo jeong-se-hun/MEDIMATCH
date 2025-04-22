@@ -29,9 +29,9 @@ export default function MedicineCard({
           <Image
             src={itemImage || MEDICINE_PLACEHOLDER_IMAGE}
             alt={itemName}
-            width={100}
-            height={100}
-            className="rounded-lg object-contain"
+            width={200}
+            height={108}
+            className="rounded-lg object-contain max-h-27"
           />
         </div>
 
