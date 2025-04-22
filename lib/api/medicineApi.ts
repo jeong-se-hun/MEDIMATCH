@@ -6,8 +6,8 @@ import {
   MedicineItem,
   IngredientItem,
   IngredientResponse,
+  MedicinePermissionResponse,
 } from "@/types/medicine";
-import { MedicineParams } from "@/app/medicine/[itemSeq]/page";
 
 const SERVICE_KEY = (() => {
   const key = process.env.NEXT_PUBLIC_API_KEY;
@@ -24,12 +24,13 @@ const BASE_URL = "http://apis.data.go.kr/1471000/";
 const MEDICINE_INFO_URL =
   BASE_URL + "DrbEasyDrugInfoService/getDrbEasyDrugList";
 
-// 의약품 주성분분 조회 URL
+// 의약품 주성분 조회 URL
 const INGREDIENT_INFO_URL =
   BASE_URL + "DrugPrdtPrmsnInfoService06/getDrugPrdtMcpnDtlInq06";
 
-// const INGREDIENT_INFO_URL =
-//   BASE_URL + "DrugPrdtPrmsnInfoService06/getDrugPrdtPrmsnInq06";
+// 주성분 으로 의약품 검색
+const MEDICINE_PRODUCT_PERMISSION_LIST_URL =
+  BASE_URL + "DrugPrdtPrmsnInfoService06/getDrugPrdtPrmsnInq06";
 
 type MedicineListParams = SearchParams & {
   pageNo?: number;
@@ -79,7 +80,7 @@ export async function getMedicineList({
  * @param itemSeq 품목기준코드
  */
 export async function getMedicineDetailBySeq(
-  itemSeq: MedicineParams["itemSeq"]
+  itemSeq: MedicineItem["itemSeq"]
 ): Promise<MedicineItem | null> {
   if (!itemSeq) {
     throw new Error(
@@ -116,12 +117,10 @@ export async function getMedicineDetailBySeq(
  */
 
 export async function getMedicineIngredient(
-  itemName: string
+  itemName: MedicineItem["itemName"]
 ): Promise<IngredientItem | null> {
   if (!itemName) {
-    throw new Error(
-      "유효하지 않은 의약품 코드입니다. 코드를 다시 확인해주세요."
-    );
+    return null;
   }
 
   const params = new URLSearchParams({
@@ -151,5 +150,47 @@ export async function getMedicineIngredient(
       error
     );
     throw new Error(`의약품 주성분 조회 중 오류가 발생했습니다.`);
+  }
+}
+
+type MedicineListByIngredientParams = {
+  item_ingr_name: IngredientItem["MAIN_INGR_ENG"];
+  pageNo?: string;
+  numOfRows?: string;
+};
+
+/**
+ * 의약품 주성분으로 리스트 조회
+ * @param item_ingr_name 주성분명
+ * @param pageNo 페이지 번호 (기본값: 1)
+ * @param numOfRows 한 페이지 결과 수 (기본값: 10)
+ */
+export async function getMedicineListByIngredient({
+  item_ingr_name,
+  pageNo = "1",
+  numOfRows = "10",
+}: MedicineListByIngredientParams): Promise<MedicinePermissionResponse | null> {
+  if (!item_ingr_name) {
+    return null;
+  }
+
+  const params = new URLSearchParams({
+    serviceKey: SERVICE_KEY,
+    item_ingr_name,
+    numOfRows,
+    pageNo,
+    type: "json",
+  });
+
+  try {
+    const response = await fetchClient<MedicinePermissionResponse>(
+      `${MEDICINE_PRODUCT_PERMISSION_LIST_URL}?${params.toString()}`
+    );
+    return response;
+  } catch (error) {
+    console.error("동일 성분 의약품 정보 조회 중 오류 발생:", error);
+    throw new Error(
+      "동일 성분 의약품 정보 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+    );
   }
 }

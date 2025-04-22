@@ -1,10 +1,5 @@
 // 의약품 API의 개별 항목 타입 (medicineApi)
 export interface MedicineItem {
-  // 필수 항목
-  resultCode: string; // 결과코드 (4자리)
-  resultMsg: string; // 결과메시지 (최대 50자)
-
-  // 옵션 항목
   numOfRows: number; // 한 페이지 결과 수 (최대 3자리)
   pageNo: number; // 페이지 번호 (최대 5자리)
   totalCount: number; // 전체 결과 수 (최대 7자리)
@@ -54,6 +49,35 @@ export interface IngredientResponse {
   };
   body: {
     items: IngredientItem[];
+    pageNo: number;
+    numOfRows: number;
+    totalCount: number;
+  };
+}
+
+// 약품 제품 허가 목록 API의 개별 항목 타입 (getDrugPrdtPrmsnInq06)
+export interface MedicinePermissionItem {
+  BIZRNO: string; // 사업자등록번호
+  ITEM_SEQ: string; // 품목기준코드
+  ITEM_NAME: string; // 제품명
+  ITEM_ENG_NAME: string; // 제품영문명
+  ENTP_NAME: string; // 업체명
+  PRDLST_STDR_CODE: string; // 품목일련번호
+  PRDUCT_TYPE: string; // 분류명
+  PRDUCT_PRMISN_NO: string; // 품목일련번호
+  ITEM_INGR_NAME: string; // 주성분명
+  ITEM_INGR_CNT: string; // 주성분 수량량
+  BIG_PRDT_IMG_URL: string; // 제품 이미지 URL
+}
+
+// 약품 제품 허가 목록 API 전체 응답 타입 (getDrugPrdtPrmsnInq06)
+export interface MedicinePermissionResponse {
+  header: {
+    resultMsg: string;
+    resultCode: string;
+  };
+  body: {
+    items: MedicinePermissionItem[];
     pageNo: number;
     numOfRows: number;
     totalCount: number;

@@ -8,9 +8,8 @@ import { SearchParams } from "@/app/search/page";
 import Image from "next/image";
 import { useInView } from "react-intersection-observer";
 import ErrorPopup from "../common/ErrorPopup";
-
-const STALE_TIME = 86_400_000;
-const GC_TIME = 172_800_000;
+import { DEFAULT_GC_TIME, DEFAULT_STALE_TIME } from "@/lib/constants/time";
+import { MEDICINE_PLACEHOLDER_IMAGE } from "@/lib/constants/images";
 
 type MedicineListType = SearchParams & {
   initialData: MedicineResponse;
@@ -37,8 +36,8 @@ export default function MedicineList({
       },
 
       initialData: { pages: [initialData], pageParams: [1] },
-      staleTime: STALE_TIME,
-      gcTime: GC_TIME,
+      staleTime: DEFAULT_STALE_TIME,
+      gcTime: DEFAULT_GC_TIME,
     });
 
   const { ref: inViewRef, inView } = useInView();
@@ -64,7 +63,7 @@ export default function MedicineList({
               <div className="flex-shrink-0 mr-5">
                 <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
                   <Image
-                    src={medicine.itemImage || "/images/no-medicine-icon.png"}
+                    src={medicine.itemImage || MEDICINE_PLACEHOLDER_IMAGE}
                     alt={medicine.itemName}
                     width={90}
                     height={70}

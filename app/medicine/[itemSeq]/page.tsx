@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import Link from "next/link";
 import Image from "next/image";
 import {
   getMedicineDetailBySeq,
@@ -12,6 +10,8 @@ import MedicineInfoTabs from "@/components/medicine/MedicineInfoTabs";
 import BackButton from "@/components/common/BackButton";
 import ErrorPopup from "@/components/common/ErrorPopup";
 import { SearchType } from "@/components/search/SearchForm";
+import RecommendedMedicines from "@/components/medicine/RecommendedMedicines";
+import { MEDICINE_PLACEHOLDER_IMAGE } from "@/lib/constants/images";
 
 export type MedicineParams = {
   itemSeq: string;
@@ -38,7 +38,7 @@ export async function generateMetadata({
 
   const ogImages = medicine.itemImage
     ? [medicine.itemImage]
-    : ["/images/no-medicine-icon.png"];
+    : MEDICINE_PLACEHOLDER_IMAGE;
 
   return {
     title: title,
@@ -73,7 +73,7 @@ export default async function Medicine({
   const { data: ingredient, error: ingredientFetchError } = await safeFetch(
     () => getMedicineIngredient(medicine?.itemName)
   );
-  console.log(medicine);
+
   //TODO 추후 제거 필요
   const data = await getMedicineList({
     query: medicine.efcyQesitm,
@@ -94,7 +94,7 @@ export default async function Medicine({
             <div className="flex-shrink-0 flex items-start justify-center">
               <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-sm">
                 <Image
-                  src={medicine?.itemImage || "/images/no-medicine-icon.png"}
+                  src={medicine?.itemImage || MEDICINE_PLACEHOLDER_IMAGE}
                   alt={`${medicine?.itemName} 이미지` || "약품 이미지"}
                   width={200}
                   height={110}
@@ -110,11 +110,16 @@ export default async function Medicine({
               <p className="text-gray-500">{medicine?.entpName}</p>
 
               {/* 성분 및 함량 정보 추가 */}
-              <div className="mt-2 flex items-center">
-                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                  {ingredient?.MTRAL_NM}
-                </span>
-              </div>
+              {ingredient?.MTRAL_NM &&
+                ingredient?.QNT &&
+                ingredient?.INGD_UNIT_CD && (
+                  <div className="mt-2 flex items-center">
+                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                      {ingredient.MTRAL_NM} {ingredient.QNT}
+                      {ingredient.INGD_UNIT_CD}
+                    </span>
+                  </div>
+                )}
 
               <MedicineInfoTabs medicine={medicine} />
             </div>
@@ -132,9 +137,10 @@ export default async function Medicine({
       </div>
 
       {/* 동일 효능 약품 추천 영역*/}
+      <RecommendedMedicines medicine={medicine} ingredient={ingredient} />
 
       {/* 동일 성분 약품 추천 영역 */}
-      <section className="py-8 bg-[#f8fafc]">
+      {/* <section className="py-8 bg-[#f8fafc]">
         <div className="max-w-4xl mx-auto px-5">
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-2">
@@ -180,10 +186,7 @@ export default async function Medicine({
             </div>
           </div>
         </div>
-      </section>
-
-      {/* 하단 장식 요소 */}
-      <div className="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 via-primary to-blue-400"></div>
+      </section> */}
     </main>
   );
 }
