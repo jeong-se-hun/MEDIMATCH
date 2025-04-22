@@ -131,7 +131,7 @@ export default function RecommendedMedicines({
             </p>
           </div>
           {/* 탭 내용 */}
-          <div className="grid sm:grid-cols-2  lg:grid-cols-3 gap-4">
+          <div className="grid xs:grid-cols-2  lg:grid-cols-3 gap-4">
             {
               recommendTab === RecommendationTab.Ingredient
                 ? (
