@@ -87,7 +87,7 @@ export default async function Medicine({
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-primary to-blue-400"></div>
         <div className="max-w-4xl mx-auto p-5 pt-8">
           <div className="mb-5">
-            <BackButton label="검색 결과로 돌아가기" />
+            <BackButton label="뒤로 가기" />
           </div>
 
           <div className="flex flex-col md:flex-row gap-8">

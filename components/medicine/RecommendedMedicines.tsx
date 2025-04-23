@@ -152,6 +152,8 @@ export default function RecommendedMedicines({
                 : // 동일 효능 약품 탭일 때의 데이터 분기 처리 (예시)
                   [] // TODO: 효능 기반 API 데이터에 맞게 가공하여 map 처리
             }
+
+            {/* 무한 스크롤 트리거 엘리먼트 */}
             {hasNextPage && (
               <div ref={inViewRef} className="py-4 text-center text-gray-500">
                 {isFetchingNextPage && "Loading more..."}
