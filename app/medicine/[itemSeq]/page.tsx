@@ -12,6 +12,7 @@ import ErrorPopup from "@/components/common/ErrorPopup";
 import { SearchType } from "@/components/search/SearchForm";
 import RecommendedMedicines from "@/components/medicine/RecommendedMedicines";
 import { MEDICINE_PLACEHOLDER_IMAGE } from "@/lib/constants/images";
+import IngredientTable from "@/components/medicine/IngredientTable";
 
 export type MedicineParams = {
   itemSeq: string;
@@ -71,7 +72,7 @@ export default async function Medicine({
   }
 
   const { data: ingredient, error: ingredientFetchError } = await safeFetch(
-    () => getMedicineIngredient(medicine?.itemName)
+    () => getMedicineIngredient(medicine.itemSeq)
   );
 
   //TODO 추후 제거 필요
@@ -104,25 +105,17 @@ export default async function Medicine({
               </div>
             </div>
             <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-gray-900 break-all">
                 {medicine?.itemName}
               </h1>
               <p className="text-gray-500">{medicine?.entpName}</p>
 
-              {/* 성분 및 함량 정보 추가 */}
-              {ingredient?.MTRAL_NM &&
-                ingredient?.QNT &&
-                ingredient?.INGD_UNIT_CD && (
-                  <div className="mt-2 flex items-center">
-                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                      {ingredient.MTRAL_NM} {ingredient.QNT}
-                      {ingredient.INGD_UNIT_CD}
-                    </span>
-                  </div>
-                )}
-
               <MedicineInfoTabs medicine={medicine} />
             </div>
+          </div>
+          {/* 성분 및 함량 정보*/}
+          <div className="mt-8">
+            <IngredientTable ingredientString={ingredient?.MATERIAL_NAME} />
           </div>
         </div>
       </div>

@@ -26,7 +26,7 @@ const MEDICINE_INFO_URL =
 
 // 의약품 주성분 조회 URL
 const INGREDIENT_INFO_URL =
-  BASE_URL + "DrugPrdtPrmsnInfoService06/getDrugPrdtMcpnDtlInq06";
+  BASE_URL + "DrugPrdtPrmsnInfoService06/getDrugPrdtPrmsnDtlInq05";
 
 // 주성분 으로 의약품 검색
 const MEDICINE_PRODUCT_PERMISSION_LIST_URL =
@@ -114,18 +114,19 @@ export async function getMedicineDetailBySeq(
 /**
  * 의약품 주성분 상세 정보 조회
  * @param itemName 제품명
+ * @param itemSeq 품목기준코드
  */
 
 export async function getMedicineIngredient(
-  itemName: MedicineItem["itemName"]
+  itemSeq: MedicineItem["itemSeq"]
 ): Promise<IngredientItem | null> {
-  if (!itemName) {
+  if (!itemSeq) {
     return null;
   }
 
   const params = new URLSearchParams({
     serviceKey: SERVICE_KEY,
-    Prduct: itemName,
+    item_seq: itemSeq,
     numOfRows: "10",
     type: "json",
   });
@@ -135,10 +136,6 @@ export async function getMedicineIngredient(
       `${INGREDIENT_INFO_URL}?${params.toString()}`
     );
 
-    // TODO 추후 제거 필요
-    console.log(response, "response");
-    console.log(response.body.items, "items");
-
     if (response?.body?.items && response.body.items?.length > 0) {
       return response.body.items[0];
     } else {
@@ -146,7 +143,7 @@ export async function getMedicineIngredient(
     }
   } catch (error) {
     console.error(
-      `의약품 주성분 조회 중 오류 발생  itemName:(${itemName}):`,
+      `의약품 주성분 조회 중 오류 발생  itemName:(${itemSeq}):`,
       error
     );
     throw new Error(`의약품 주성분 조회 중 오류가 발생했습니다.`);

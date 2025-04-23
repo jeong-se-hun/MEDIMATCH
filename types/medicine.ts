@@ -31,14 +31,16 @@ export interface MedicineResponse {
 
 // 주성분 API의 개별 항목 타입
 export interface IngredientItem {
-  ENTRPS: "string"; // 업체명
-  PRDUCT: "string"; // 제품명
-  MTRAL_CODE: "string"; // 주성분코드
-  MTRAL_NM: "string"; // 주성분명
-  QNT: "string"; // 용량
-  INGD_UNIT_CD: "string"; // 용량단위
-  ITEM_SEQ: "string"; // 품목기준코드
-  MAIN_INGR_ENG: "string"; // 주성분영문명
+  ITEM_SEQ: string; // 품목기준코드
+  ITEM_NAME: string; // 품목명
+  ENTP_NAME: string; // 업체명
+  CHART: string; // 성상
+  MATERIAL_NAME: string; // 원료성분
+  INSERT_FILE: string; // 첨부문서 정보
+  MAIN_ITEM_INGR: string; // 유효성분 정보
+  INGR_NAME: string; // 첨가제 정보
+  ITEM_ENG_NAME: string; // 품목영문명
+  MAIN_INGR_ENG: string; // 주성분영문명
 }
 
 // 주성분 API 전체 응답 타입
