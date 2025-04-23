@@ -97,9 +97,9 @@ export default async function Medicine({
                 <Image
                   src={medicine?.itemImage || MEDICINE_PLACEHOLDER_IMAGE}
                   alt={`${medicine?.itemName} 이미지` || "약품 이미지"}
-                  width={200}
+                  width={150}
                   height={110}
-                  className="rounded-lg w-[200px] h-[110px]"
+                  className="rounded-lg aspect-[150/110]"
                   priority
                 />
               </div>

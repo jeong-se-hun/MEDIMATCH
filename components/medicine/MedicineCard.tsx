@@ -31,7 +31,7 @@ export default function MedicineCard({
             alt={itemName}
             width={200}
             height={108}
-            className="rounded-lg object-contain max-h-27"
+            className="rounded-lg object-contain aspect-[200/108]"
           />
         </div>
 
