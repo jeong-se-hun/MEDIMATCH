@@ -10,6 +10,7 @@ import { useInView } from "react-intersection-observer";
 import ErrorPopup from "../common/ErrorPopup";
 import { DEFAULT_GC_TIME, DEFAULT_STALE_TIME } from "@/lib/constants/time";
 import { MEDICINE_PLACEHOLDER_IMAGE } from "@/lib/constants/images";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 type MedicineListType = SearchParams & {
   initialData: MedicineResponse;
@@ -88,8 +89,8 @@ export default function MedicineList({
 
       {/* 무한 스크롤 트리거 엘리먼트 */}
       {hasNextPage && (
-        <div ref={inViewRef} className="py-4 text-center text-gray-500">
-          {isFetchingNextPage && "Loading more..."}
+        <div ref={inViewRef} className="py-6 flex items-center justify-center">
+          <LoadingSpinner />
         </div>
       )}
     </div>

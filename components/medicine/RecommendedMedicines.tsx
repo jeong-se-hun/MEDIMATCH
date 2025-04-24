@@ -5,12 +5,14 @@ import {
   MedicinePermissionItem,
   MedicinePermissionResponse,
 } from "@/types/medicine";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react"; // useMemo 추가
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import MedicineCard from "./MedicineCard";
 import { getMedicineListByIngredient } from "@/lib/api/medicineApi";
 import { DEFAULT_GC_TIME, DEFAULT_STALE_TIME } from "@/lib/constants/time";
+import { ChevronDown } from "lucide-react";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 export type RecommendedMedicinesProps = {
   ingredient: IngredientItem | null;
@@ -22,10 +24,6 @@ enum RecommendationTab {
   Efficacy = "효능",
 }
 
-// TODO 추후 적용 예정 리스트
-// 동일 효능 약품 내부 효능 선택 가능한 드롭 다운 ui 추가
-// ingredient 값이 null 일 겨우 동일 성분 약품 이 없습니다 ui 추가
-
 export default function RecommendedMedicines({
   ingredient,
   medicine,
@@ -34,8 +32,23 @@ export default function RecommendedMedicines({
     RecommendationTab.Ingredient
   );
 
+  // 성분 목록 파싱 및 상태 관리
+  const ingredientsList = useMemo(() => {
+    return ingredient?.MAIN_INGR_ENG?.split("/").map((s) => s.trim()) || [];
+  }, [ingredient?.MAIN_INGR_ENG]);
+
+  const [selectedIngredient, setSelectedIngredient] = useState<string>(
+    ingredientsList[0] || ""
+  );
+
   const handleTabChange = (tab: RecommendationTab) => {
     setRecommendTab(tab);
+  };
+
+  const handleIngredientChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setSelectedIngredient(event.target.value);
   };
 
   const {
@@ -49,16 +62,15 @@ export default function RecommendedMedicines({
       "recommendedMedicines",
       medicine.itemSeq,
       RecommendationTab.Ingredient,
-      ingredient?.MAIN_INGR_ENG,
+      selectedIngredient,
     ],
     queryFn: ({ pageParam = 1 }) =>
       getMedicineListByIngredient({
-        item_ingr_name: ingredient?.MAIN_INGR_ENG!,
+        item_ingr_name: selectedIngredient,
         pageNo: String(pageParam),
       }),
     enabled:
-      recommendTab === RecommendationTab.Ingredient &&
-      !!ingredient?.MAIN_INGR_ENG,
+      recommendTab === RecommendationTab.Ingredient && !!selectedIngredient,
 
     getNextPageParam: (lastPage) => {
       const currentPage = lastPage?.body?.pageNo
@@ -79,10 +91,19 @@ export default function RecommendedMedicines({
   });
 
   const { ref: inViewRef, inView } = useInView();
-  console.log(sameIngredientMedicines);
 
+  // 첫 성분으로 초기화
+  useEffect(() => {
+    if (ingredientsList.length > 0 && !selectedIngredient) {
+      setSelectedIngredient(ingredientsList[0]);
+    }
+  }, [ingredientsList, selectedIngredient]);
+
+  // 무한 스크롤
   // useEffect(() => {
-  //   if (inView && hasNextPage) fetchNextPage();
+  //   if (inView && hasNextPage && !isFetchingNextPage) {
+  //     fetchNextPage();
+  //   }
   // }, [inView, hasNextPage, fetchNextPage]);
 
   return (
@@ -118,20 +139,44 @@ export default function RecommendedMedicines({
         <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
           {/* 탭 헤더 */}
           <div className="mb-6">
-            <div className="flex items-center gap-2 mb-2">
-              <div className={`w-1.5 h-6 rounded-full bg-blue-500`}></div>
-              <h2 className="text-xl font-bold text-gray-900">
-                동일 {recommendTab} 약품 추천
-              </h2>
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <div className="flex items-center gap-2">
+                <div className={`w-1.5 h-6 rounded-full bg-blue-500`}></div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  동일 {recommendTab} 약품 추천
+                </h2>
+              </div>
+              {/* 성분 드롭다운 */}
+              {recommendTab === RecommendationTab.Ingredient &&
+                ingredientsList.length > 1 && (
+                  <div className="relative">
+                    <select
+                      value={selectedIngredient}
+                      onChange={handleIngredientChange}
+                      className="block cursor-pointer w-full appearance-none bg-white border border-gray-300 text-gray-900 py-2 pl-4 pr-8 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    >
+                      {ingredientsList.map((ingr) => (
+                        <option key={ingr} value={ingr}>
+                          {ingr}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                      <ChevronDown />
+                    </div>
+                  </div>
+                )}
             </div>
             <p className="text-gray-500 text-sm ml-4">
               {recommendTab === RecommendationTab.Efficacy
                 ? "비슷한 효능을 가진 다른 약품들을 확인해보세요"
+                : ingredientsList.length > 1
+                ? `선택된 성분(${selectedIngredient})으로 만들어진 다른 약품들을 확인해보세요`
                 : "같은 성분으로 만들어진 다른 약품들을 확인해보세요"}
             </p>
           </div>
           {/* 탭 내용 */}
-          <div className="grid xs:grid-cols-2  lg:grid-cols-3 gap-4">
+          <div className="grid xs:grid-cols-2 lg:grid-cols-3 gap-4">
             {
               recommendTab === RecommendationTab.Ingredient
                 ? (
@@ -139,6 +184,8 @@ export default function RecommendedMedicines({
                       (page) => page?.body?.items ?? []
                     ) ?? []
                   ).map((item: MedicinePermissionItem) => {
+                    // 현재 보고 있는 약품은 제외
+                    if (medicine.itemSeq === item.ITEM_SEQ) return null;
                     const mappedItem = {
                       itemSeq: item.ITEM_SEQ,
                       itemName: item.ITEM_NAME,
@@ -153,13 +200,24 @@ export default function RecommendedMedicines({
                   [] // TODO: 효능 기반 API 데이터에 맞게 가공하여 map 처리
             }
 
-            {/* 무한 스크롤 트리거 엘리먼트 */}
-            {hasNextPage && (
-              <div ref={inViewRef} className="py-4 text-center text-gray-500">
-                {isFetchingNextPage && "Loading more..."}
-              </div>
-            )}
+            {/* 데이터 없음 표시 */}
+            {recommendTab === RecommendationTab.Ingredient &&
+              !isFetchingNextPage &&
+              sameIngredientMedicines?.pages?.[0]?.body?.totalCount === 0 && (
+                <div className="col-span-full text-center text-gray-500 py-4">
+                  해당 성분의 다른 약품 정보가 없습니다.
+                </div>
+              )}
           </div>
+          {/* 무한 스크롤 트리거 엘리먼트 */}
+          {hasNextPage && (
+            <div
+              ref={inViewRef}
+              className="pt-6 flex items-center justify-center"
+            >
+              <LoadingSpinner />
+            </div>
+          )}
         </div>
       </div>
     </section>
