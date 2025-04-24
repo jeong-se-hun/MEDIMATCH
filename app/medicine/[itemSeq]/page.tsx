@@ -131,55 +131,6 @@ export default async function Medicine({
 
       {/* 동일 효능 약품 추천 영역*/}
       <RecommendedMedicines medicine={medicine} ingredient={ingredient} />
-
-      {/* 동일 성분 약품 추천 영역 */}
-      {/* <section className="py-8 bg-[#f8fafc]">
-        <div className="max-w-4xl mx-auto px-5">
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-1.5 h-6 bg-purple-500 rounded-full"></div>
-              <h2 className="text-xl font-bold text-gray-900">
-                동일 성분 약품 추천
-              </h2>
-            </div>
-            <p className="text-gray-500 text-sm ml-4">
-              같은 성분으로 만들어진 다른 약품들을 확인해보세요
-            </p>
-          </div>
-
-          <div className="relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-100 via-purple-50 to-transparent rounded-xl blur-sm opacity-70"></div>
-            <div className="relative bg-white rounded-xl shadow-md p-4 border border-purple-50">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex-1">
-                  <span className="inline-block px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
-                    {ingredient?.MTRAL_NM}
-                  </span>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    className="p-2 rounded-full bg-white hover:bg-gray-50 transition-colors border border-gray-200 shadow-sm"
-                    aria-label="이전 항목 보기"
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </button>
-                  <button
-                    className="p-2 rounded-full bg-white hover:bg-gray-50 transition-colors border border-gray-200 shadow-sm"
-                    aria-label="다음 항목 보기"
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-
-              <div
-                className="flex overflow-x-auto gap-5 pb-4 scrollbar-hide"
-                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-              ></div>
-            </div>
-          </div>
-        </div>
-      </section> */}
     </main>
   );
 }

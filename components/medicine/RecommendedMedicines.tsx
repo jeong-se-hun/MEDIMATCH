@@ -5,13 +5,12 @@ import {
   MedicinePermissionItem,
   MedicinePermissionResponse,
 } from "@/types/medicine";
-import { useEffect, useMemo, useState } from "react"; // useMemo 추가
+import { useEffect, useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import MedicineCard from "./MedicineCard";
 import { getMedicineListByIngredient } from "@/lib/api/medicineApi";
 import { DEFAULT_GC_TIME, DEFAULT_STALE_TIME } from "@/lib/constants/time";
-import { ChevronDown } from "lucide-react";
 import LoadingSpinner from "../common/LoadingSpinner";
 
 export type RecommendedMedicinesProps = {
@@ -32,25 +31,10 @@ export default function RecommendedMedicines({
     RecommendationTab.Ingredient
   );
 
-  // 성분 목록 파싱 및 상태 관리
-  const ingredientsList = useMemo(() => {
-    return ingredient?.MAIN_INGR_ENG?.split("/").map((s) => s.trim()) || [];
-  }, [ingredient?.MAIN_INGR_ENG]);
-
-  const [selectedIngredient, setSelectedIngredient] = useState<string>(
-    ingredientsList[0] || ""
-  );
-
   const handleTabChange = (tab: RecommendationTab) => {
     setRecommendTab(tab);
   };
-
-  const handleIngredientChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setSelectedIngredient(event.target.value);
-  };
-
+  console.log(medicine);
   const {
     data: sameIngredientMedicines,
     fetchNextPage,
@@ -62,15 +46,18 @@ export default function RecommendedMedicines({
       "recommendedMedicines",
       medicine.itemSeq,
       RecommendationTab.Ingredient,
-      selectedIngredient,
+      ingredient?.MAIN_INGR_ENG,
     ],
-    queryFn: ({ pageParam = 1 }) =>
-      getMedicineListByIngredient({
-        item_ingr_name: selectedIngredient,
+    queryFn: ({ pageParam = 1 }) => {
+      if (!ingredient?.MAIN_INGR_ENG) return null;
+      return getMedicineListByIngredient({
+        item_ingr_name: ingredient.MAIN_INGR_ENG,
         pageNo: String(pageParam),
-      }),
+      });
+    },
     enabled:
-      recommendTab === RecommendationTab.Ingredient && !!selectedIngredient,
+      recommendTab === RecommendationTab.Ingredient &&
+      !!ingredient?.MAIN_INGR_ENG,
 
     getNextPageParam: (lastPage) => {
       const currentPage = lastPage?.body?.pageNo
@@ -91,13 +78,6 @@ export default function RecommendedMedicines({
   });
 
   const { ref: inViewRef, inView } = useInView();
-
-  // 첫 성분으로 초기화
-  useEffect(() => {
-    if (ingredientsList.length > 0 && !selectedIngredient) {
-      setSelectedIngredient(ingredientsList[0]);
-    }
-  }, [ingredientsList, selectedIngredient]);
 
   // 무한 스크롤
   useEffect(() => {
@@ -146,33 +126,11 @@ export default function RecommendedMedicines({
                   동일 {recommendTab} 약품 추천
                 </h2>
               </div>
-              {/* 성분 드롭다운 */}
-              {recommendTab === RecommendationTab.Ingredient &&
-                ingredientsList.length > 1 && (
-                  <div className="relative">
-                    <select
-                      value={selectedIngredient}
-                      onChange={handleIngredientChange}
-                      className="block cursor-pointer w-full appearance-none bg-white border border-gray-300 text-gray-900 py-2 pl-4 pr-8 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                    >
-                      {ingredientsList.map((ingredient) => (
-                        <option key={ingredient} value={ingredient}>
-                          {ingredient}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
-                      <ChevronDown />
-                    </div>
-                  </div>
-                )}
             </div>
             <p className="text-gray-500 text-sm ml-4">
-              {recommendTab === RecommendationTab.Efficacy
-                ? "비슷한 효능을 가진 다른 약품들을 확인해보세요"
-                : ingredientsList.length > 1
-                ? `선택된 성분(${selectedIngredient})으로 만들어진 다른 약품들을 확인해보세요`
-                : "같은 성분으로 만들어진 다른 약품들을 확인해보세요"}
+              {recommendTab === RecommendationTab.Ingredient
+                ? "모든 성분이 일치하는 의약품만 보여집니다. 함량은 제품마다 다르며, 상세 페이지에서 확인하세요."
+                : "비슷한 효능을 가진 다른 약품들을 확인해보세요"}
             </p>
           </div>
           {/* 탭 내용 */}
@@ -205,7 +163,7 @@ export default function RecommendedMedicines({
               !isFetching &&
               sameIngredientMedicines?.pages?.[0]?.body?.totalCount === 0 && (
                 <div className="col-span-full text-center text-gray-500 py-4">
-                  해당 성분의 다른 약품 정보가 없습니다.
+                  성분이 일치하는 다른 의약품 정보가 없습니다.
                 </div>
               )}
           </div>

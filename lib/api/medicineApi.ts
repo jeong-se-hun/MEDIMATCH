@@ -113,7 +113,6 @@ export async function getMedicineDetailBySeq(
 
 /**
  * 의약품 주성분 상세 정보 조회
- * @param itemName 제품명
  * @param itemSeq 품목기준코드
  */
 
