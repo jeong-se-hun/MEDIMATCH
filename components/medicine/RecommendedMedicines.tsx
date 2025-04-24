@@ -54,8 +54,8 @@ export default function RecommendedMedicines({
   const {
     data: sameIngredientMedicines,
     fetchNextPage,
+    isFetching,
     hasNextPage,
-    isFetchingNextPage,
     error: ingredientError,
   } = useInfiniteQuery<MedicinePermissionResponse | null, Error>({
     queryKey: [
@@ -100,11 +100,11 @@ export default function RecommendedMedicines({
   }, [ingredientsList, selectedIngredient]);
 
   // 무한 스크롤
-  // useEffect(() => {
-  //   if (inView && hasNextPage && !isFetchingNextPage) {
-  //     fetchNextPage();
-  //   }
-  // }, [inView, hasNextPage, fetchNextPage]);
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetching) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, fetchNextPage]);
 
   return (
     <section className="py-8 bg-[#f8fafc]">
@@ -155,9 +155,9 @@ export default function RecommendedMedicines({
                       onChange={handleIngredientChange}
                       className="block cursor-pointer w-full appearance-none bg-white border border-gray-300 text-gray-900 py-2 pl-4 pr-8 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                     >
-                      {ingredientsList.map((ingr) => (
-                        <option key={ingr} value={ingr}>
-                          {ingr}
+                      {ingredientsList.map((ingredient) => (
+                        <option key={ingredient} value={ingredient}>
+                          {ingredient}
                         </option>
                       ))}
                     </select>
@@ -202,22 +202,23 @@ export default function RecommendedMedicines({
 
             {/* 데이터 없음 표시 */}
             {recommendTab === RecommendationTab.Ingredient &&
-              !isFetchingNextPage &&
+              !isFetching &&
               sameIngredientMedicines?.pages?.[0]?.body?.totalCount === 0 && (
                 <div className="col-span-full text-center text-gray-500 py-4">
                   해당 성분의 다른 약품 정보가 없습니다.
                 </div>
               )}
           </div>
-          {/* 무한 스크롤 트리거 엘리먼트 */}
-          {hasNextPage && (
-            <div
-              ref={inViewRef}
-              className="pt-6 flex items-center justify-center"
-            >
+
+          {/* 로딩 스피너 */}
+          {isFetching && (
+            <div className="pt-6 flex items-center justify-center">
               <LoadingSpinner />
             </div>
           )}
+
+          {/* 무한 스크롤 트리거 엘리먼트 */}
+          {hasNextPage && <div ref={inViewRef}></div>}
         </div>
       </div>
     </section>
