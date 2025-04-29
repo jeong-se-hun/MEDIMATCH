@@ -111,6 +111,51 @@ export async function getMedicineDetailBySeq(
   }
 }
 
+type MedicineDetailByEfficacyParams = {
+  efcyQesitm: MedicineItem["efcyQesitm"];
+  pageNo?: string;
+  numOfRows?: string;
+};
+
+/**
+ * 효능 기반 의약품 리스트트 조회
+ * @param efcyQesitm 품목기준코드
+ */
+export async function getMedicineDetailByEfficacy({
+  efcyQesitm,
+  pageNo = "1",
+  numOfRows = "10",
+}: MedicineDetailByEfficacyParams): Promise<MedicineResponse | null> {
+  if (!efcyQesitm) {
+    return null;
+  }
+
+  const params = new URLSearchParams({
+    serviceKey: SERVICE_KEY,
+    efcyQesitm,
+    numOfRows,
+    pageNo,
+    type: "json",
+  });
+
+  try {
+    const response = await fetchClient<MedicineResponse>(
+      `${MEDICINE_INFO_URL}?${params.toString()}`
+    );
+
+    if (response?.body?.items && response.body.items.length > 0) {
+      return response;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("동일 효능 의약품 정보 조회 중 오류 발생:", error);
+    throw new Error(
+      "동일 효능 의약품 정보 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+    );
+  }
+}
+
 /**
  * 의약품 주성분 상세 정보 조회
  * @param itemSeq 품목기준코드

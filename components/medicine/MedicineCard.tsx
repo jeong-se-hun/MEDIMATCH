@@ -9,7 +9,6 @@ type MedicineCardProps = {
   itemName: string;
   entpName: string;
   itemImage?: string;
-  efcyQesitm?: string;
 };
 
 export default function MedicineCard({
@@ -17,7 +16,6 @@ export default function MedicineCard({
   itemName,
   entpName,
   itemImage,
-  efcyQesitm,
 }: MedicineCardProps) {
   return (
     <Link
@@ -38,11 +36,6 @@ export default function MedicineCard({
         <h3 className="font-semibold text-gray-900 line-clamp-2 mb-1 text-sm">
           {itemName}
         </h3>
-        {efcyQesitm && (
-          <span className="inline-block text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full">
-            {efcyQesitm}
-          </span>
-        )}
 
         <p className="text-xs text-gray-500 mb-2">{entpName}</p>
       </div>

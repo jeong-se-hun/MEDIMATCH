@@ -3,13 +3,11 @@ import Image from "next/image";
 import {
   getMedicineDetailBySeq,
   getMedicineIngredient,
-  getMedicineList,
 } from "@/lib/api/medicineApi";
 import { safeFetch } from "@/lib/utils/safeFetch";
 import MedicineInfoTabs from "@/components/medicine/MedicineInfoTabs";
 import BackButton from "@/components/common/BackButton";
 import ErrorPopup from "@/components/common/ErrorPopup";
-import { SearchType } from "@/components/search/SearchForm";
 import RecommendedMedicines from "@/components/medicine/RecommendedMedicines";
 import { MEDICINE_PLACEHOLDER_IMAGE } from "@/lib/constants/images";
 import IngredientTable from "@/components/medicine/IngredientTable";
@@ -63,26 +61,20 @@ export default async function Medicine({
   const { itemSeq } = await params;
   const decodeItemSeq = decodeURIComponent(itemSeq);
 
-  const { data: medicine, error: medicineFetchError } = await safeFetch(() =>
-    getMedicineDetailBySeq(decodeItemSeq)
-  );
+  const [medicineResult, ingredientResult] = await Promise.all([
+    safeFetch(() => getMedicineDetailBySeq(decodeItemSeq)),
+    safeFetch(() => getMedicineIngredient(decodeItemSeq)),
+  ]);
+
+  const { data: medicine, error: medicineFetchError } = medicineResult;
+  const { data: ingredient } = ingredientResult;
 
   if (medicineFetchError || !medicine) {
     return <ErrorPopup error={medicineFetchError} />;
   }
 
-  const { data: ingredient, error: ingredientFetchError } = await safeFetch(
-    () => getMedicineIngredient(medicine.itemSeq)
-  );
-
-  //TODO 추후 제거 필요
-  const data = await getMedicineList({
-    query: medicine.efcyQesitm,
-    searchType: SearchType.SYMPTOM,
-  });
-
   return (
-    <main className="min-h-screen bg-[#f8fafc]">
+    <main className="min-h-screen">
       <div className="bg-white shadow-lg relative overflow-hidden">
         {/* 상단 요소 */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-primary to-blue-400"></div>
@@ -120,16 +112,7 @@ export default async function Medicine({
         </div>
       </div>
 
-      {/* 영역 구분선  */}
-      <div className="relative h-24 overflow-hidden bg-[#f8fafc]">
-        <div className="max-w-4xl mx-auto px-5 pt-10">
-          <div className="border-b border-gray-200 pb-2">
-            <h2 className="text-xl font-bold text-gray-700">추천 약품</h2>
-          </div>
-        </div>
-      </div>
-
-      {/* 동일 효능 약품 추천 영역*/}
+      {/* 약품 추천 영역*/}
       <RecommendedMedicines medicine={medicine} ingredient={ingredient} />
     </main>
   );

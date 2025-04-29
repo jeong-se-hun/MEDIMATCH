@@ -1,19 +1,10 @@
 "use client";
-import {
-  IngredientItem,
-  MedicineItem,
-  MedicinePermissionItem,
-  MedicinePermissionResponse,
-} from "@/types/medicine";
-import { useEffect, useState } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useInView } from "react-intersection-observer";
-import MedicineCard from "./MedicineCard";
-import { getMedicineListByIngredient } from "@/lib/api/medicineApi";
-import { DEFAULT_GC_TIME, DEFAULT_STALE_TIME } from "@/lib/constants/time";
-import LoadingSpinner from "../common/LoadingSpinner";
+import { IngredientItem, MedicineItem } from "@/types/medicine";
+import { useState } from "react";
+import RecommendedByIngredient from "@/components/medicine/RecommendedByIngredient";
+import RecommendedByEfficacy from "./RecommendedByEfficacy";
 
-export type RecommendedMedicinesProps = {
+type RecommendedMedicinesProps = {
   ingredient: IngredientItem | null;
   medicine: MedicineItem;
 };
@@ -22,6 +13,21 @@ enum RecommendationTab {
   Ingredient = "성분",
   Efficacy = "효능",
 }
+
+const TABS = [
+  {
+    id: RecommendationTab.Ingredient,
+    label: "동일 성분 약품",
+    panelId: "ingredient-panel",
+    buttonId: "ingredient-tab",
+  },
+  {
+    id: RecommendationTab.Efficacy,
+    label: "동일 효능 약품",
+    panelId: "efficacy-panel",
+    buttonId: "efficacy-tab",
+  },
+];
 
 export default function RecommendedMedicines({
   ingredient,
@@ -34,151 +40,69 @@ export default function RecommendedMedicines({
   const handleTabChange = (tab: RecommendationTab) => {
     setRecommendTab(tab);
   };
-  console.log(medicine);
-  const {
-    data: sameIngredientMedicines,
-    fetchNextPage,
-    isFetching,
-    hasNextPage,
-    error: ingredientError,
-  } = useInfiniteQuery<MedicinePermissionResponse | null, Error>({
-    queryKey: [
-      "recommendedMedicines",
-      medicine.itemSeq,
-      RecommendationTab.Ingredient,
-      ingredient?.MAIN_INGR_ENG,
-    ],
-    queryFn: ({ pageParam = 1 }) => {
-      if (!ingredient?.MAIN_INGR_ENG) return null;
-      return getMedicineListByIngredient({
-        item_ingr_name: ingredient.MAIN_INGR_ENG,
-        pageNo: String(pageParam),
-      });
-    },
-    enabled:
-      recommendTab === RecommendationTab.Ingredient &&
-      !!ingredient?.MAIN_INGR_ENG,
-
-    getNextPageParam: (lastPage) => {
-      const currentPage = lastPage?.body?.pageNo
-        ? Number(lastPage.body.pageNo)
-        : 1;
-      const itemsPerPage = lastPage?.body?.numOfRows
-        ? Number(lastPage.body.numOfRows)
-        : 10;
-      const totalItems = lastPage?.body?.totalCount
-        ? Number(lastPage.body.totalCount)
-        : 0;
-      const totalPages = Math.ceil(totalItems / itemsPerPage);
-      return currentPage < totalPages ? currentPage + 1 : undefined;
-    },
-    initialPageParam: 1,
-    staleTime: DEFAULT_STALE_TIME,
-    gcTime: DEFAULT_GC_TIME,
-  });
-
-  const { ref: inViewRef, inView } = useInView();
-
-  // 무한 스크롤
-  useEffect(() => {
-    if (inView && hasNextPage && !isFetching) {
-      fetchNextPage();
-    }
-  }, [inView, hasNextPage, fetchNextPage]);
 
   return (
-    <section className="py-8 bg-[#f8fafc]">
-      <div className="max-w-4xl mx-auto px-5">
-        {/* 탭 UI */}
-        <div className="mb-6">
-          <div className="inline-flex bg-white rounded-lg p-1 shadow-sm border border-gray-100">
-            <button
-              onClick={() => handleTabChange(RecommendationTab.Ingredient)}
-              className={`px-5 py-2 rounded-md text-sm font-medium transition-all cursor-pointer ${
-                recommendTab === RecommendationTab.Ingredient
-                  ? "bg-primary text-white shadow-sm"
-                  : "text-gray-700 hover:bg-gray-50"
-              }`}
-            >
-              동일 성분 약품
-            </button>
-            <button
-              onClick={() => handleTabChange(RecommendationTab.Efficacy)}
-              className={`px-5 py-2 rounded-md text-sm font-medium transition-all cursor-pointer ${
-                recommendTab === RecommendationTab.Efficacy
-                  ? "bg-primary text-white shadow-sm"
-                  : "text-gray-700 hover:bg-gray-50"
-              }`}
-            >
-              동일 효능 약품
-            </button>
+    <>
+      {/* 영역 구분선  */}
+      <div className="relative h-24 overflow-hidden bg-gray-50">
+        <div className="max-w-4xl mx-auto px-5 pt-10">
+          <div className="border-b border-gray-200 pb-2">
+            <h2 className="text-xl font-bold text-gray-700">추천 약품</h2>
           </div>
-        </div>
-
-        {/* 탭 */}
-        <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-          {/* 탭 헤더 */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <div className="flex items-center gap-2">
-                <div className={`w-1.5 h-6 rounded-full bg-blue-500`}></div>
-                <h2 className="text-xl font-bold text-gray-900">
-                  동일 {recommendTab} 약품 추천
-                </h2>
-              </div>
-            </div>
-            <p className="text-gray-500 text-sm ml-4">
-              {recommendTab === RecommendationTab.Ingredient
-                ? "모든 성분이 일치하는 의약품만 보여집니다. 함량은 제품마다 다르며, 상세 페이지에서 확인하세요."
-                : "비슷한 효능을 가진 다른 약품들을 확인해보세요"}
-            </p>
-          </div>
-          {/* 탭 내용 */}
-          <div className="grid xs:grid-cols-2 lg:grid-cols-3 gap-4">
-            {
-              recommendTab === RecommendationTab.Ingredient
-                ? (
-                    sameIngredientMedicines?.pages.flatMap(
-                      (page) => page?.body?.items ?? []
-                    ) ?? []
-                  ).map((item: MedicinePermissionItem) => {
-                    // 현재 보고 있는 약품은 제외
-                    if (medicine.itemSeq === item.ITEM_SEQ) return null;
-                    const mappedItem = {
-                      itemSeq: item.ITEM_SEQ,
-                      itemName: item.ITEM_NAME,
-                      entpName: item.ENTP_NAME,
-                      itemImage: item.BIG_PRDT_IMG_URL,
-                    };
-                    return (
-                      <MedicineCard key={mappedItem.itemSeq} {...mappedItem} />
-                    );
-                  })
-                : // 동일 효능 약품 탭일 때의 데이터 분기 처리 (예시)
-                  [] // TODO: 효능 기반 API 데이터에 맞게 가공하여 map 처리
-            }
-
-            {/* 데이터 없음 표시 */}
-            {recommendTab === RecommendationTab.Ingredient &&
-              !isFetching &&
-              sameIngredientMedicines?.pages?.[0]?.body?.totalCount === 0 && (
-                <div className="col-span-full text-center text-gray-500 py-4">
-                  성분이 일치하는 다른 의약품 정보가 없습니다.
-                </div>
-              )}
-          </div>
-
-          {/* 로딩 스피너 */}
-          {isFetching && (
-            <div className="pt-6 flex items-center justify-center">
-              <LoadingSpinner />
-            </div>
-          )}
-
-          {/* 무한 스크롤 트리거 엘리먼트 */}
-          {hasNextPage && <div ref={inViewRef}></div>}
         </div>
       </div>
-    </section>
+
+      <section className="py-8 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-5">
+          {/* 탭 UI */}
+          <div className="mb-6">
+            <div
+              className="inline-flex bg-white rounded-lg p-1 shadow-sm border border-gray-100"
+              role="tablist"
+              aria-label="추천 약품"
+            >
+              {TABS.map((tabInfo) => (
+                <button
+                  key={tabInfo.id}
+                  id={tabInfo.buttonId}
+                  onClick={() => handleTabChange(tabInfo.id)}
+                  className={`px-5 py-2 rounded-md text-sm font-medium transition-all cursor-pointer ${
+                    recommendTab === tabInfo.id
+                      ? "bg-primary text-white shadow-sm"
+                      : "text-gray-700 hover:bg-gray-50"
+                  }`}
+                  role="tab"
+                  aria-selected={recommendTab === tabInfo.id}
+                  aria-controls={tabInfo.panelId}
+                >
+                  {tabInfo.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 탭 내용 */}
+          {TABS.map((tabInfo) => (
+            <div
+              key={tabInfo.panelId}
+              id={tabInfo.panelId}
+              role="tabpanel"
+              aria-labelledby={tabInfo.buttonId}
+              hidden={recommendTab !== tabInfo.id}
+            >
+              {tabInfo.id === RecommendationTab.Ingredient && (
+                <RecommendedByIngredient
+                  ingredient={ingredient}
+                  medicine={medicine}
+                />
+              )}
+              {tabInfo.id === RecommendationTab.Efficacy && (
+                <RecommendedByEfficacy medicine={medicine} />
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    </>
   );
 }
