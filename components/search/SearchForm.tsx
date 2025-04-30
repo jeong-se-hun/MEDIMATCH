@@ -18,7 +18,7 @@ const BASE_INPUT_CLASSES =
 const BASE_RADIO_CONTAINER_CLASSES = "flex mb-4 bg-gray-100 p-1 rounded-lg";
 
 export default function SearchForm({
-  defaultSearchType,
+  defaultSearchType = SearchType.MEDICINE,
   defaultQuery = "",
 }: SearchFormProps) {
   return (

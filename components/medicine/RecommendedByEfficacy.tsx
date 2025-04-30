@@ -5,9 +5,9 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { MedicineItem, MedicineResponse } from "@/types/medicine";
 import MedicineCard from "./MedicineCard";
-import { getMedicineDetailByEfficacy } from "@/lib/api/medicineApi";
 import LoadingSpinner from "../common/LoadingSpinner";
 import { DEFAULT_GC_TIME, DEFAULT_STALE_TIME } from "@/lib/constants/time";
+import { FETCH_EFFICACY_FAILED } from "@/lib/constants/errors";
 
 export type RecommendedByEfficacyProps = {
   medicine: MedicineItem;
@@ -23,11 +23,18 @@ export default function RecommendedByEfficacy({
     hasNextPage,
   } = useInfiniteQuery<MedicineResponse | null, Error>({
     queryKey: ["recommendedByEfficacy", medicine.itemSeq, medicine.efcyQesitm],
-    queryFn: ({ pageParam = 1 }) =>
-      getMedicineDetailByEfficacy({
+    queryFn: async ({ pageParam = 1 }) => {
+      const params = new URLSearchParams({
         efcyQesitm: medicine.efcyQesitm,
         pageNo: String(pageParam),
-      }),
+      });
+
+      const res = await fetch(`/api/efficacy?${params.toString()}`);
+      if (!res.ok) {
+        throw new Error(FETCH_EFFICACY_FAILED);
+      }
+      return res.json();
+    },
     enabled: !!medicine.efcyQesitm,
     getNextPageParam: (lastPage) => {
       const currentPage = lastPage?.body?.pageNo

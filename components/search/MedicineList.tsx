@@ -3,7 +3,6 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import Link from "next/link";
 import { MedicineResponse } from "@/types/medicine";
-import { getMedicineList } from "@/lib/api/medicineApi";
 import { SearchParams } from "@/app/search/page";
 import Image from "next/image";
 import { useInView } from "react-intersection-observer";
@@ -11,6 +10,11 @@ import ErrorPopup from "../common/ErrorPopup";
 import { DEFAULT_GC_TIME, DEFAULT_STALE_TIME } from "@/lib/constants/time";
 import { MEDICINE_PLACEHOLDER_IMAGE } from "@/lib/constants/images";
 import LoadingSpinner from "../common/LoadingSpinner";
+import {
+  FETCH_SEARCH_FAILED,
+  SEARCH_PARAMS_REQUIRED,
+} from "@/lib/constants/errors";
+import { SearchType } from "./SearchForm";
 
 type MedicineListType = SearchParams & {
   initialData: MedicineResponse;
@@ -21,11 +25,31 @@ export default function MedicineList({
   query,
   searchType,
 }: MedicineListType) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, error } =
+  const { data, fetchNextPage, hasNextPage, isFetching, error } =
     useInfiniteQuery({
       queryKey: ["medicines", query, searchType],
-      queryFn: ({ pageParam }) =>
-        getMedicineList({ query, searchType, pageNo: pageParam }),
+      queryFn: async ({ pageParam = 1 }) => {
+        if (
+          !query ||
+          (searchType !== SearchType.MEDICINE &&
+            searchType !== SearchType.SYMPTOM)
+        ) {
+          throw new Error(SEARCH_PARAMS_REQUIRED);
+        }
+        const params = new URLSearchParams({
+          query: query,
+          searchType: searchType,
+          pageNo: String(pageParam),
+        });
+
+        const res = await fetch(`/api/search?${params.toString()}`);
+        if (!res.ok) {
+          throw new Error(FETCH_SEARCH_FAILED);
+        }
+
+        return res.json();
+      },
+
       initialPageParam: 1,
       getNextPageParam: (lastPage) => {
         const currentPage = lastPage?.body.pageNo || 1;
@@ -44,8 +68,10 @@ export default function MedicineList({
   const { ref: inViewRef, inView } = useInView();
 
   useEffect(() => {
-    if (inView) fetchNextPage();
-  }, [inView]);
+    if (inView && hasNextPage && !isFetching) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetching, fetchNextPage]);
 
   if (error) {
     return <ErrorPopup error={error} />;
@@ -87,12 +113,14 @@ export default function MedicineList({
         )
       )}
 
-      {/* 무한 스크롤 트리거 엘리먼트 */}
-      {hasNextPage && (
+      {isFetching && (
         <div ref={inViewRef} className="py-6 flex items-center justify-center">
           <LoadingSpinner />
         </div>
       )}
+
+      {/* 무한 스크롤 트리거 엘리먼트 */}
+      {hasNextPage && <div ref={inViewRef}></div>}
     </div>
   );
 }

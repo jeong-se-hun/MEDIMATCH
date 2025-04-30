@@ -8,12 +8,21 @@ import {
   IngredientResponse,
   MedicinePermissionResponse,
 } from "@/types/medicine";
+import {
+  FETCH_EFFICACY_FAILED,
+  FETCH_INGREDIENT_FAILED,
+  FETCH_MEDICINE_DETAIL_FAILED,
+  FETCH_MEDICINE_INGREDIENTS_FAILED,
+  FETCH_SEARCH_FAILED,
+  GENERIC_ERROR_MESSAGE,
+  INVALID_CODE_ERROR,
+} from "@/lib/constants/errors";
 
 const SERVICE_KEY = (() => {
-  const key = process.env.NEXT_PUBLIC_API_KEY;
+  const key = process.env.API_KEY;
   if (!key) {
     console.error("API_KEY 환경 변수가 설정되지 않았습니다.");
-    throw new Error("오류가 발생했습니다 잠시 후 다시 시도해주세요.");
+    throw new Error(GENERIC_ERROR_MESSAGE);
   }
   return key;
 })();
@@ -33,7 +42,7 @@ const MEDICINE_PRODUCT_PERMISSION_LIST_URL =
   BASE_URL + "DrugPrdtPrmsnInfoService06/getDrugPrdtPrmsnInq06";
 
 type MedicineListParams = SearchParams & {
-  pageNo?: number;
+  pageNo?: string;
 };
 /**
  * 의약품 리스트 조회
@@ -44,7 +53,7 @@ type MedicineListParams = SearchParams & {
 export async function getMedicineList({
   query,
   searchType,
-  pageNo = 1,
+  pageNo = "1",
 }: MedicineListParams): Promise<MedicineResponse | null> {
   if (!query) return null;
 
@@ -67,25 +76,21 @@ export async function getMedicineList({
     );
     return response;
   } catch (error) {
-    console.error("의약품 정보 조회 중 오류 발생:", error);
-    throw new Error(
-      "의약품 정보 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
-    );
+    console.error("의약품 리스트 조회 중 오류:", error);
+    throw new Error(FETCH_SEARCH_FAILED);
   }
 }
 
 /**
  * 의약품 상세 정보 조회
- * 품목기준코드(itemSeq)를 사용하여 의약품 상세 정보 조회 (e약은요 API 활용)
+ * 품목기준코드(itemSeq)를 사용하여 의약품 상세 정보 조회
  * @param itemSeq 품목기준코드
  */
 export async function getMedicineDetailBySeq(
   itemSeq: MedicineItem["itemSeq"]
 ): Promise<MedicineItem | null> {
   if (!itemSeq) {
-    throw new Error(
-      "유효하지 않은 의약품 코드입니다. 코드를 다시 확인해주세요."
-    );
+    throw new Error(INVALID_CODE_ERROR);
   }
 
   const params = new URLSearchParams({
@@ -106,8 +111,8 @@ export async function getMedicineDetailBySeq(
       return null;
     }
   } catch (error) {
-    console.error(`의약품 상세 정보 조회 중 오류 발생 (${itemSeq}):`, error);
-    throw new Error(`의약품 상세 정보 조회 중 오류가 발생했습니다.`);
+    console.error(`의약품 상세 조회 중 오류: (${itemSeq}):`, error);
+    throw new Error(FETCH_MEDICINE_DETAIL_FAILED);
   }
 }
 
@@ -149,10 +154,8 @@ export async function getMedicineDetailByEfficacy({
       return null;
     }
   } catch (error) {
-    console.error("동일 효능 의약품 정보 조회 중 오류 발생:", error);
-    throw new Error(
-      "동일 효능 의약품 정보 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
-    );
+    console.error("동일 효능 의약품 조회 중 오류:", error);
+    throw new Error(FETCH_EFFICACY_FAILED);
   }
 }
 
@@ -186,11 +189,8 @@ export async function getMedicineIngredient(
       return null;
     }
   } catch (error) {
-    console.error(
-      `의약품 주성분 조회 중 오류 발생  itemName:(${itemSeq}):`,
-      error
-    );
-    throw new Error(`의약품 주성분 조회 중 오류가 발생했습니다.`);
+    console.error(`의약품 주성분 조회 중 오류:(${itemSeq}):`, error);
+    throw new Error(FETCH_MEDICINE_INGREDIENTS_FAILED);
   }
 }
 
@@ -229,9 +229,7 @@ export async function getMedicineListByIngredient({
     );
     return response;
   } catch (error) {
-    console.error("동일 성분 의약품 정보 조회 중 오류 발생:", error);
-    throw new Error(
-      "동일 성분 의약품 정보 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
-    );
+    console.error("동일 성분 의약품 조회 중 오류:", error);
+    throw new Error(FETCH_INGREDIENT_FAILED);
   }
 }

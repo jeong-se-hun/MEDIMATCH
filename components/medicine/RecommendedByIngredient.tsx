@@ -2,7 +2,6 @@ import { useEffect, useMemo } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import MedicineCard from "@/components/medicine/MedicineCard";
-import { getMedicineListByIngredient } from "@/lib/api/medicineApi";
 import { DEFAULT_GC_TIME, DEFAULT_STALE_TIME } from "@/lib/constants/time";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import {
@@ -11,6 +10,7 @@ import {
   MedicinePermissionItem,
   MedicinePermissionResponse,
 } from "@/types/medicine";
+import { FETCH_INGREDIENT_FAILED } from "@/lib/constants/errors";
 
 type RecommendedByIngredientProps = {
   ingredient: IngredientItem | null;
@@ -32,13 +32,21 @@ export default function RecommendedByIngredient({
       medicine.itemSeq,
       ingredient?.MAIN_INGR_ENG,
     ],
-    queryFn: ({ pageParam = 1 }) => {
-      if (!ingredient?.MAIN_INGR_ENG) return null;
-      return getMedicineListByIngredient({
-        item_ingr_name: ingredient.MAIN_INGR_ENG,
+
+    queryFn: async ({ pageParam = 1 }) => {
+      const params = new URLSearchParams({
+        item_ingr_name: ingredient?.MAIN_INGR_ENG || "",
         pageNo: String(pageParam),
       });
+
+      const res = await fetch(`/api/ingredient?${params.toString()}`);
+      if (!res.ok) {
+        throw new Error(FETCH_INGREDIENT_FAILED);
+      }
+
+      return res.json();
     },
+
     enabled: !!ingredient?.MAIN_INGR_ENG,
     getNextPageParam: (lastPage) => {
       const currentPage = Number(lastPage?.body?.pageNo || 1);
