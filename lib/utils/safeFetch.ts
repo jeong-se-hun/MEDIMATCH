@@ -2,10 +2,10 @@ export async function safeFetch<T>(fetcher: () => Promise<T>) {
   try {
     const data = await fetcher();
     return { data, error: null };
-  } catch (err) {
-    console.error(err);
-    if (err instanceof Error) {
-      return { data: null, error: err };
+  } catch (error) {
+    console.error(error);
+    if (error instanceof Error) {
+      return { data: null, error: error };
     } else {
       return {
         data: null,

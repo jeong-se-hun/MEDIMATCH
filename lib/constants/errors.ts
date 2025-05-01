@@ -20,3 +20,6 @@ export const FETCH_INGREDIENT_FAILED =
   "동일 성분 의약품 정보 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."; // 의약품 주성분 정보 조회 API 호출 실패 시
 
 export const SEARCH_PARAMS_REQUIRED = "검색어 또는 검색 타입이 필요합니다.";
+
+export const MEDICINE_NOT_FOUND =
+  "해당 의약품의 정보를 찾을 수 없습니다. 다른 의약품을 검색해주세요.";

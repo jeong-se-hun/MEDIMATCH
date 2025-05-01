@@ -11,6 +11,7 @@ import ErrorPopup from "@/components/common/ErrorPopup";
 import RecommendedMedicines from "@/components/medicine/RecommendedMedicines";
 import { MEDICINE_PLACEHOLDER_IMAGE } from "@/lib/constants/images";
 import IngredientTable from "@/components/medicine/IngredientTable";
+import { MEDICINE_NOT_FOUND } from "@/lib/constants/errors";
 
 export type MedicineParams = {
   itemSeq: string;
@@ -21,36 +22,43 @@ export async function generateMetadata({
 }: {
   params: Promise<MedicineParams>;
 }): Promise<Metadata> {
-  const { itemSeq } = await params;
-  const decodeItemSeq = decodeURIComponent(itemSeq);
-  const medicine = await getMedicineDetailBySeq(decodeItemSeq);
+  try {
+    const { itemSeq } = await params;
+    const decodeItemSeq = decodeURIComponent(itemSeq);
+    const medicine = await getMedicineDetailBySeq(decodeItemSeq);
 
-  if (!medicine) {
+    if (!medicine) {
+      return {
+        title: "약품 정보를 찾을 수 없습니다.",
+        description: "다른 약품을 검색해보세요",
+      };
+    }
+
+    const title = `${medicine.itemName} - 상세 정보 | MEDIMATCH`;
+    const description = medicine.efcyQesitm;
+
+    const ogImages = medicine.itemImage
+      ? [medicine.itemImage]
+      : MEDICINE_PLACEHOLDER_IMAGE;
+
+    return {
+      title: title,
+      description: description,
+      openGraph: {
+        title: title,
+        description: description,
+        images: ogImages,
+        url: `/medicine/${itemSeq}`,
+        type: "website",
+        siteName: "MEDIMATCH",
+      },
+    };
+  } catch (error) {
     return {
       title: "약품 정보를 찾을 수 없습니다.",
       description: "다른 약품을 검색해보세요",
     };
   }
-
-  const title = `${medicine.itemName} - 상세 정보 | MEDIMATCH`;
-  const description = medicine.efcyQesitm;
-
-  const ogImages = medicine.itemImage
-    ? [medicine.itemImage]
-    : MEDICINE_PLACEHOLDER_IMAGE;
-
-  return {
-    title: title,
-    description: description,
-    openGraph: {
-      title: title,
-      description: description,
-      images: ogImages,
-      url: `/medicine/${itemSeq}`,
-      type: "website",
-      siteName: "MEDIMATCH",
-    },
-  };
 }
 
 export default async function Medicine({
@@ -70,7 +78,8 @@ export default async function Medicine({
   const { data: ingredient } = ingredientResult;
 
   if (medicineFetchError || !medicine) {
-    return <ErrorPopup error={medicineFetchError} />;
+    const ERROR = medicineFetchError || new Error(MEDICINE_NOT_FOUND);
+    return <ErrorPopup error={ERROR} />;
   }
 
   return (

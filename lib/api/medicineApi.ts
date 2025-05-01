@@ -16,6 +16,7 @@ import {
   FETCH_SEARCH_FAILED,
   GENERIC_ERROR_MESSAGE,
   INVALID_CODE_ERROR,
+  MEDICINE_NOT_FOUND,
 } from "@/lib/constants/errors";
 
 const SERVICE_KEY = (() => {
@@ -104,15 +105,18 @@ export async function getMedicineDetailBySeq(
     const response = await fetchClient<MedicineResponse>(
       `${MEDICINE_INFO_URL}?${params.toString()}`
     );
-
     if (response?.body?.items && response.body.items.length > 0) {
       return response.body.items[0];
     } else {
-      return null;
+      throw new Error(MEDICINE_NOT_FOUND);
     }
   } catch (error) {
     console.error(`의약품 상세 조회 중 오류: (${itemSeq}):`, error);
-    throw new Error(FETCH_MEDICINE_DETAIL_FAILED);
+    if (error instanceof Error && error.message === MEDICINE_NOT_FOUND) {
+      throw error;
+    } else {
+      throw new Error(FETCH_MEDICINE_DETAIL_FAILED);
+    }
   }
 }
 
