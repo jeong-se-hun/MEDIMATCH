@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { LOGO_IMAGE } from "@/lib/constants/images";
 import SearchForm, { SearchType } from "@/components/search/SearchForm";
 import { getMedicineList } from "@/lib/api/medicineApi";
 import MedicineList from "@/components/search/MedicineList";
@@ -32,7 +33,7 @@ export default async function Search({
         <div className="flex items-center justify-between mb-8">
           <Link href="/" className="flex items-center">
             <Image
-              src="/images/logo.png"
+              src={LOGO_IMAGE}
               alt="MEDI MATCH"
               width={40}
               height={40}

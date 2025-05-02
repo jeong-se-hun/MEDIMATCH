@@ -1,5 +1,6 @@
 import Image from "next/image";
 import SearchForm, { SearchType } from "@/components/search/SearchForm";
+import { LOGO_IMAGE } from "@/lib/constants/images";
 
 export default function Home() {
   return (
@@ -7,7 +8,7 @@ export default function Home() {
       <div className="w-full max-w-md mx-auto text-center">
         <div className="flex justify-center mb-6">
           <Image
-            src="/images/logo.png"
+            src={LOGO_IMAGE}
             alt="logo image"
             width={70}
             height={70}
