@@ -3,17 +3,21 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import Link from "next/link";
 import { MedicineResponse } from "@/types/medicine";
-import { getMedicineList } from "@/lib/api/medicineApi";
 import { SearchParams } from "@/app/search/page";
 import Image from "next/image";
 import { useInView } from "react-intersection-observer";
-import ErrorPopup from "./ErrorPopup";
-
-const STALE_TIME = 86_400_000;
-const GC_TIME = 172_800_000;
+import ErrorPopup from "../common/ErrorPopup";
+import { DEFAULT_GC_TIME, DEFAULT_STALE_TIME } from "@/lib/constants/time";
+import { MEDICINE_PLACEHOLDER_IMAGE } from "@/lib/constants/images";
+import LoadingSpinner from "../common/LoadingSpinner";
+import {
+  FETCH_SEARCH_FAILED,
+  SEARCH_PARAMS_REQUIRED,
+} from "@/lib/constants/errors";
+import { SearchType } from "./SearchForm";
 
 type MedicineListType = SearchParams & {
-  initialData?: MedicineResponse;
+  initialData: MedicineResponse;
 };
 
 export default function MedicineList({
@@ -21,11 +25,31 @@ export default function MedicineList({
   query,
   searchType,
 }: MedicineListType) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, error } =
+  const { data, fetchNextPage, hasNextPage, isFetching, error } =
     useInfiniteQuery({
       queryKey: ["medicines", query, searchType],
-      queryFn: ({ pageParam }) =>
-        getMedicineList({ query, searchType, pageNo: pageParam }),
+      queryFn: async ({ pageParam = 1 }) => {
+        if (
+          !query ||
+          (searchType !== SearchType.MEDICINE &&
+            searchType !== SearchType.SYMPTOM)
+        ) {
+          throw new Error(SEARCH_PARAMS_REQUIRED);
+        }
+        const params = new URLSearchParams({
+          query: query,
+          searchType: searchType,
+          pageNo: String(pageParam),
+        });
+
+        const res = await fetch(`/api/search?${params.toString()}`);
+        if (!res.ok) {
+          throw new Error(FETCH_SEARCH_FAILED);
+        }
+
+        return res.json();
+      },
+
       initialPageParam: 1,
       getNextPageParam: (lastPage) => {
         const currentPage = lastPage?.body.pageNo || 1;
@@ -37,14 +61,17 @@ export default function MedicineList({
       },
 
       initialData: { pages: [initialData], pageParams: [1] },
-      staleTime: STALE_TIME,
-      gcTime: GC_TIME,
+      staleTime: DEFAULT_STALE_TIME,
+      gcTime: DEFAULT_GC_TIME,
     });
+
   const { ref: inViewRef, inView } = useInView();
 
   useEffect(() => {
-    if (inView) fetchNextPage();
-  }, [inView]);
+    if (inView && hasNextPage && !isFetching) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetching, fetchNextPage]);
 
   if (error) {
     return <ErrorPopup error={error} />;
@@ -55,19 +82,19 @@ export default function MedicineList({
       {(data?.pages.flatMap((page) => page?.body.items ?? []) ?? []).map(
         (medicine) => (
           <Link
-            key={medicine.itemName}
-            href={`/medicine/${medicine.itemName}`}
+            key={medicine.itemSeq}
+            href={`/medicine/${medicine.itemSeq}`}
             className="block hover:bg-gray-50 transition-colors"
           >
             <div className="p-6 flex items-center">
               <div className="flex-shrink-0 mr-5">
                 <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
                   <Image
-                    src={medicine.itemImage || "/images/no-medicine-icon.png"}
+                    src={medicine.itemImage || MEDICINE_PLACEHOLDER_IMAGE}
                     alt={medicine.itemName}
                     width={90}
                     height={70}
-                    className="rounded-lg w-[90px] h-[70px] object-center"
+                    className="rounded-lg aspect-[90/70]"
                   />
                 </div>
               </div>
@@ -86,12 +113,14 @@ export default function MedicineList({
         )
       )}
 
-      {/* 무한 스크롤 트리거 엘리먼트 */}
-      {hasNextPage && (
-        <div ref={inViewRef} className="py-4 text-center text-gray-500">
-          {isFetchingNextPage && "Loading more..."}
+      {isFetching && (
+        <div ref={inViewRef} className="py-6 flex items-center justify-center">
+          <LoadingSpinner />
         </div>
       )}
+
+      {/* 무한 스크롤 트리거 엘리먼트 */}
+      {hasNextPage && <div ref={inViewRef}></div>}
     </div>
   );
 }
