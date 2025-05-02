@@ -40,7 +40,7 @@ jobs:
           COMMIT_BEFORE: ${{ github.event.before }}
           COMMIT_AFTER: ${{ github.event.after }}
           AI_API_KEY: ${{ secrets.AI_API_KEY }}
-          AI_MODEL: "deepseek/deepseek-chat-v3-0324:free" # Example: "gemini-2.0-pro-exp-02-05"
+          AI_MODEL: "google/gemini-2.0-flash-exp:free" # Example: "gemini-2.0-pro-exp-02-05"
           AI_MODEL_PROVIDER: "openRouter" # Check the README for available AI service providers
           REVIEW_FEEDBACK_LANGUAGE: "한국어" # Set the language for review feedback
         run: node index.js
