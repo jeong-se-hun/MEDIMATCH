@@ -3,7 +3,7 @@ name: AI Code Reviewer
 on:
   pull_request:
     branches:
-      - develop
+      - main # Change this to the branch you want to review
     types:
       - opened
       - synchronize
@@ -27,6 +27,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: jeong-se-hun/AICodeReviewer
+          ref: test/ai-review
 
       - name: Install Dependencies
         run: npm install
