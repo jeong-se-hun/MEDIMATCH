@@ -34,7 +34,7 @@ export default async function Search({
           <Link href="/" className="flex items-center">
             <Image
               src={LOGO_IMAGE}
-              alt="MEDI MATCH"
+              alt="logo image"
               width={40}
               height={40}
               className="mr-3"
@@ -45,6 +45,7 @@ export default async function Search({
           <Link
             href="/"
             className="text-gray-500 hover:text-primary transition-colors flex items-center"
+            aria-label="홈 페이지로 이동"
           >
             <ArrowLeft className="h-4 w-4 mr-1" />
             <span>홈으로</span>
