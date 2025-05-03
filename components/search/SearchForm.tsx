@@ -12,7 +12,7 @@ type SearchFormProps = {
   defaultQuery?: string;
 };
 
-// 기본 스타일 정의 (
+// 기본 스타일 정의
 const BASE_INPUT_CLASSES =
   "w-full px-5 py-3 mb-4 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all";
 const BASE_RADIO_CONTAINER_CLASSES = "flex mb-4 bg-gray-100 p-1 rounded-lg";
@@ -60,8 +60,12 @@ export default function SearchForm({
       {/* 검색어 입력 필드 */}
 
       <div className="relative flex-1">
+        <label htmlFor="searchQuery" className="sr-only">
+          검색어 입력
+        </label>
         <input
           type="text"
+          id="searchQuery"
           name="query"
           defaultValue={defaultQuery}
           required

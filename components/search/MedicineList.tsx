@@ -1,20 +1,18 @@
 "use client";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
-import Link from "next/link";
+import { useEffect, useMemo } from "react";
 import { MedicineResponse } from "@/types/medicine";
 import { SearchParams } from "@/app/search/page";
-import Image from "next/image";
 import { useInView } from "react-intersection-observer";
 import ErrorPopup from "../common/ErrorPopup";
 import { DEFAULT_GC_TIME, DEFAULT_STALE_TIME } from "@/lib/constants/time";
-import { MEDICINE_PLACEHOLDER_IMAGE } from "@/lib/constants/images";
 import LoadingSpinner from "../common/LoadingSpinner";
 import {
   FETCH_SEARCH_FAILED,
   SEARCH_PARAMS_REQUIRED,
 } from "@/lib/constants/errors";
 import { SearchType } from "./SearchForm";
+import MedicineListItem from "./MedicineListItem";
 
 type MedicineListType = SearchParams & {
   initialData: MedicineResponse;
@@ -31,11 +29,12 @@ export default function MedicineList({
       queryFn: async ({ pageParam = 1 }) => {
         if (
           !query ||
-          (searchType !== SearchType.MEDICINE &&
-            searchType !== SearchType.SYMPTOM)
+          !searchType ||
+          !Object.values(SearchType).includes(searchType)
         ) {
           throw new Error(SEARCH_PARAMS_REQUIRED);
         }
+
         const params = new URLSearchParams({
           query: query,
           searchType: searchType,
@@ -73,48 +72,28 @@ export default function MedicineList({
     }
   }, [inView, hasNextPage, isFetching, fetchNextPage]);
 
+  const medicines = useMemo(() => {
+    return data?.pages.flatMap((page) => page?.body.items ?? []) ?? [];
+  }, [data]);
+
   if (error) {
     return <ErrorPopup error={error} />;
   }
 
   return (
     <div className="divide-y divide-gray-100">
-      {(data?.pages.flatMap((page) => page?.body.items ?? []) ?? []).map(
-        (medicine) => (
-          <Link
-            key={medicine.itemSeq}
-            href={`/medicine/${medicine.itemSeq}`}
-            className="block hover:bg-gray-50 transition-colors"
-          >
-            <div className="p-6 flex items-center">
-              <div className="flex-shrink-0 mr-5">
-                <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
-                  <Image
-                    src={medicine.itemImage || MEDICINE_PLACEHOLDER_IMAGE}
-                    alt={medicine.itemName}
-                    width={90}
-                    height={70}
-                    className="rounded-lg aspect-[90/70]"
-                  />
-                </div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  {medicine.itemName}
-                </h2>
-                <p className="text-sm text-gray-500">{medicine.entpName}</p>
-                <div className="mt-2 text-sm text-gray-700 line-clamp-2">
-                  {medicine.efcyQesitm}
-                </div>
-                <div className="mt-3 flex flex-wrap gap-1"></div>
-              </div>
+      {medicines.length > 0
+        ? medicines.map((medicine) => (
+            <MedicineListItem key={medicine.itemSeq} medicine={medicine} />
+          ))
+        : !isFetching && (
+            <div className="py-12 text-center text-gray-500">
+              검색 결과가 없습니다.
             </div>
-          </Link>
-        )
-      )}
+          )}
 
       {isFetching && (
-        <div ref={inViewRef} className="py-6 flex items-center justify-center">
+        <div className="py-6 flex items-center justify-center">
           <LoadingSpinner />
         </div>
       )}

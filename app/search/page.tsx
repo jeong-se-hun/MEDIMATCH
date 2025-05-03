@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { LOGO_IMAGE } from "@/lib/constants/images";
 import SearchForm, { SearchType } from "@/components/search/SearchForm";
 import { getMedicineList } from "@/lib/api/medicineApi";
 import MedicineList from "@/components/search/MedicineList";
@@ -32,8 +33,8 @@ export default async function Search({
         <div className="flex items-center justify-between mb-8">
           <Link href="/" className="flex items-center">
             <Image
-              src="/images/logo.png"
-              alt="MEDI MATCH"
+              src={LOGO_IMAGE}
+              alt="logo image"
               width={40}
               height={40}
               className="mr-3"
@@ -44,6 +45,7 @@ export default async function Search({
           <Link
             href="/"
             className="text-gray-500 hover:text-primary transition-colors flex items-center"
+            aria-label="홈 페이지로 이동"
           >
             <ArrowLeft className="h-4 w-4 mr-1" />
             <span>홈으로</span>
