@@ -113,7 +113,7 @@ export default function RecommendedByEfficacy({
           </div>
         )}
 
-        {hasNextPage && <div ref={inViewRef}></div>}
+        {hasNextPage && !error && <div ref={inViewRef}></div>}
       </div>
     </div>
   );

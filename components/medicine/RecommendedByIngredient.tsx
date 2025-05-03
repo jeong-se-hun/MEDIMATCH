@@ -128,7 +128,7 @@ export default function RecommendedByIngredient({
           </div>
         )}
 
-        {hasNextPage && <div ref={inViewRef}></div>}
+        {hasNextPage && !error && <div ref={inViewRef}></div>}
       </div>
     </div>
   );
