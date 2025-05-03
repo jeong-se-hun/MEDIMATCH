@@ -77,7 +77,7 @@ export default async function Medicine({
 
   if (medicineFetchError || !medicine) {
     const ERROR = medicineFetchError || new Error(MEDICINE_NOT_FOUND);
-    return <ErrorPopup error={ERROR} />;
+    return <ErrorPopup error={ERROR} shouldNavigateBack={true} />;
   }
 
   return (
