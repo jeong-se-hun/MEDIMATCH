@@ -11,7 +11,11 @@ export default function BackButton({ label }: BackButtonProps) {
   const router = useRouter();
 
   const handleClick = () => {
-    router.back();
+    if (window.history.length <= 1) {
+      router.push("/");
+    } else {
+      router.back();
+    }
   };
 
   return (
