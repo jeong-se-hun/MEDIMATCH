@@ -21,6 +21,7 @@ export default function RecommendedByEfficacy({
     fetchNextPage,
     isFetching,
     hasNextPage,
+    error,
   } = useInfiniteQuery<MedicineResponse | null, Error>({
     queryKey: ["recommendedByEfficacy", medicine.itemSeq, medicine.efcyQesitm],
     queryFn: async ({ pageParam = 1 }) => {
@@ -37,16 +38,14 @@ export default function RecommendedByEfficacy({
     },
     enabled: !!medicine.efcyQesitm,
     getNextPageParam: (lastPage) => {
-      const currentPage = lastPage?.body?.pageNo
-        ? Number(lastPage.body.pageNo)
-        : 1;
-      const itemsPerPage = lastPage?.body?.numOfRows
-        ? Number(lastPage.body.numOfRows)
-        : 10;
-      const totalItems = lastPage?.body?.totalCount
-        ? Number(lastPage.body.totalCount)
-        : 0;
-      const totalPages = Math.ceil(totalItems / itemsPerPage);
+      if (!lastPage?.body) return undefined;
+      const currentPage = parseInt(String(lastPage.body.pageNo), 10) || 1;
+      const numOfRows = parseInt(String(lastPage.body.numOfRows), 10) || 10;
+      const totalCount = parseInt(String(lastPage.body.totalCount), 10) || 0;
+
+      if (totalCount === 0 || numOfRows === 0) return undefined;
+
+      const totalPages = Math.ceil(totalCount / numOfRows);
       return currentPage < totalPages ? currentPage + 1 : undefined;
     },
     initialPageParam: 1,
@@ -96,7 +95,13 @@ export default function RecommendedByEfficacy({
           />
         ))}
 
-        {!isFetching && filteredMedicines.length === 0 && (
+        {error && (
+          <div className="col-span-full text-center text-red-500 py-4">
+            {error.message || FETCH_EFFICACY_FAILED}
+          </div>
+        )}
+
+        {!isFetching && !error && filteredMedicines.length === 0 && (
           <div className="col-span-full text-center text-gray-500 py-4">
             효능이 일치하는 다른 의약품 정보가 없습니다.
           </div>
