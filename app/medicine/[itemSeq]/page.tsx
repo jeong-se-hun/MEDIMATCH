@@ -81,7 +81,7 @@ export default async function Medicine({
   }
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen flex flex-col">
       <div className="bg-white shadow-lg relative overflow-hidden">
         {/* 상단 요소 */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-primary to-blue-400"></div>

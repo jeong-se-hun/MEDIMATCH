@@ -26,6 +26,7 @@ export default function RecommendedByIngredient({
     fetchNextPage,
     isFetching,
     hasNextPage,
+    error,
   } = useInfiniteQuery<MedicinePermissionResponse | null, Error>({
     queryKey: [
       "recommendedByIngredient",
@@ -105,7 +106,13 @@ export default function RecommendedByIngredient({
           />
         ))}
 
-        {!isFetching && filteredMedicines.length === 0 && (
+        {error && (
+          <div className="col-span-full text-center text-red-500 py-4">
+            {error.message || FETCH_INGREDIENT_FAILED}
+          </div>
+        )}
+
+        {!isFetching && !error && filteredMedicines.length === 0 && (
           <div className="col-span-full text-center text-gray-500 py-4">
             성분이 일치하는 다른 의약품 정보가 없습니다.
           </div>
