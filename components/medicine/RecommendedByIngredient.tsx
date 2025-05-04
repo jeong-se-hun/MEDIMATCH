@@ -42,7 +42,8 @@ export default function RecommendedByIngredient({
 
       const res = await fetch(`/api/ingredient?${params.toString()}`);
       if (!res.ok) {
-        throw new Error(FETCH_INGREDIENT_FAILED);
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || FETCH_INGREDIENT_FAILED);
       }
 
       return res.json();

@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const pageNo = searchParams.get("pageNo") || "1";
 
     if (!efcyQesitm.trim()) {
-      console.error("efcyQesitm(효능) 값 확인 필요");
+      console.error(`API 호출 실패: efcyQesitm 값 누락`);
       return NextResponse.json(
         {
           message: FETCH_EFFICACY_FAILED,
