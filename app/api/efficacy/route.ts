@@ -8,6 +8,16 @@ export async function GET(request: NextRequest) {
     const efcyQesitm = searchParams.get("efcyQesitm") || "";
     const pageNo = searchParams.get("pageNo") || "1";
 
+    if (!efcyQesitm.trim()) {
+      console.error("efcyQesitm(효능) 값 확인 필요");
+      return NextResponse.json(
+        {
+          message: FETCH_EFFICACY_FAILED,
+        },
+        { status: 400 }
+      );
+    }
+
     const data = await getMedicineDetailByEfficacy({ efcyQesitm, pageNo });
     return NextResponse.json(data);
   } catch (error) {

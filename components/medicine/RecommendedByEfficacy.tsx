@@ -32,7 +32,8 @@ export default function RecommendedByEfficacy({
 
       const res = await fetch(`/api/efficacy?${params.toString()}`);
       if (!res.ok) {
-        throw new Error(FETCH_EFFICACY_FAILED);
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || FETCH_EFFICACY_FAILED);
       }
       return res.json();
     },
