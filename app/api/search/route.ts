@@ -9,14 +9,18 @@ import { SearchType } from "@/components/search/SearchForm";
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const query = searchParams.get("query");
+    const query = searchParams.get("query") || "";
     const searchType = searchParams.get("searchType");
     const pageNo = searchParams.get("pageNo") || "1";
 
     if (
-      !query ||
+      !query.trim() ||
       (searchType !== SearchType.MEDICINE && searchType !== SearchType.SYMPTOM)
     ) {
+      console.error(
+        "[API] 검색 요청 실패: 필수 파라미터 누락 또는 잘못된 검색 타입",
+        { query, searchType }
+      );
       return NextResponse.json(
         {
           message: SEARCH_PARAMS_REQUIRED,

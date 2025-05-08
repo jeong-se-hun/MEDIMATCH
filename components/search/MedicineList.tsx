@@ -42,7 +42,8 @@ export default function MedicineList({
 
         const res = await fetch(`/api/search?${params.toString()}`);
         if (!res.ok) {
-          throw new Error(FETCH_SEARCH_FAILED);
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData.message || FETCH_SEARCH_FAILED);
         }
 
         return res.json();
