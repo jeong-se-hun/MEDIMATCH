@@ -8,8 +8,8 @@ export async function GET(request: NextRequest) {
     const item_ingr_name = searchParams.get("item_ingr_name") || "";
     const pageNo = searchParams.get("pageNo") || "1";
 
-    if (item_ingr_name.trim()) {
-      console.error(`API 호출 실패: item_ingr_name 값 누락`);
+    if (!item_ingr_name.trim()) {
+      console.error("[API] 성분 데이터 조회 실패: item_ingr_name 누락");
       return NextResponse.json(
         {
           message: FETCH_INGREDIENT_FAILED,

@@ -7,7 +7,7 @@ type ErrorPopupProps = {
   error: Error | null;
   errorMessage?: string;
   onClose?: () => void;
-  fallbackPath?: string; // 선택적 리다이렉트 경로
+  fallbackPath?: string; // 선택적 리다이렉트 경로. shouldNavigateBack이 true이고 history에 이전 페이지가 없을 경우 사용됩니다.
   shouldNavigateBack?: boolean; // 뒤로가기 여부 (기본값: false)
 };
 
