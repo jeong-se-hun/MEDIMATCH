@@ -38,7 +38,7 @@ export default function MedicineInfoTabs({ medicine }: MedicineInfoTabsProps) {
     <div className="mt-6 flex flex-col gap-3">
       {/* 탭 버튼 목록 */}
       <div
-        className="flex overflow-x-auto scrollbar-hide gap-1"
+        className="flex overflow-x-auto gap-1"
         role="tablist"
         aria-label="의약품 상세 정보"
       >

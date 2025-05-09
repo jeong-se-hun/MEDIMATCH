@@ -1,33 +1,48 @@
 "use client";
 import { AlertTriangle } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 type ErrorPopupProps = {
   error: Error | null;
   errorMessage?: string;
   onClose?: () => void;
+  fallbackPath?: string; // 선택적 리다이렉트 경로. shouldNavigateBack이 true이고 history에 이전 페이지가 없을 경우 사용됩니다.
+  shouldNavigateBack?: boolean; // 뒤로가기 여부 (기본값: false)
 };
 
 export default function ErrorPopup({
   error,
   errorMessage = "오류가 발생했습니다 잠시 후 다시 시도해주세요.",
   onClose,
+  fallbackPath = "/",
+  shouldNavigateBack = false,
 }: ErrorPopupProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     setIsOpen(!!error);
   }, [error]);
 
+  useEffect(() => {
+    if (isOpen && closeButtonRef.current) {
+      closeButtonRef.current.focus();
+    }
+  }, [isOpen]);
+
   const handleClose = () => {
     setIsOpen(false);
 
     if (typeof onClose === "function") {
-      onClose?.();
-    } else {
-      router.back();
+      onClose();
+    } else if (shouldNavigateBack) {
+      if (window.history.length <= 1 && fallbackPath) {
+        router.push(fallbackPath);
+      } else {
+        router.back();
+      }
     }
   };
 
@@ -50,6 +65,7 @@ export default function ErrorPopup({
         <p className="text-gray-700 mb-6">{error?.message || errorMessage}</p>
         <div className="flex justify-end ">
           <button
+            ref={closeButtonRef}
             onClick={handleClose}
             className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg cursor-pointer hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
             aria-label="팝업 닫기"

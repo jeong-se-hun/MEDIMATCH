@@ -52,15 +52,24 @@ export default function IngredientTable({
           {/* 테이블 본문 */}
           <tbody className="bg-white divide-y divide-gray-200">
             {ingredients.map((item, index) => (
-              <tr key={index} className={index % 2 === 0 ? "" : "bg-gray-50"}>
+              <tr
+                key={
+                  item.classification
+                    ? `${item.classification}-${item.ingredientName}`
+                    : item.ingredientName
+                }
+                className={index % 2 === 0 ? "" : "bg-gray-50"}
+              >
                 <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-800">
                   {item.classification || "-"}
                 </td>
                 <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {item.ingredientName}
+                  {item.ingredientName || "-"}
                 </td>
                 <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-800">
-                  {item.quantity} {item.unit}
+                  {item.quantity && item.unit
+                    ? `${item.quantity} ${item.unit}`
+                    : "-"}
                 </td>
               </tr>
             ))}

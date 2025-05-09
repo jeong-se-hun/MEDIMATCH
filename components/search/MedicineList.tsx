@@ -4,7 +4,6 @@ import { useEffect, useMemo } from "react";
 import { MedicineResponse } from "@/types/medicine";
 import { SearchParams } from "@/app/search/page";
 import { useInView } from "react-intersection-observer";
-import ErrorPopup from "../common/ErrorPopup";
 import { DEFAULT_GC_TIME, DEFAULT_STALE_TIME } from "@/lib/constants/time";
 import LoadingSpinner from "../common/LoadingSpinner";
 import {
@@ -43,7 +42,8 @@ export default function MedicineList({
 
         const res = await fetch(`/api/search?${params.toString()}`);
         if (!res.ok) {
-          throw new Error(FETCH_SEARCH_FAILED);
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData.message || FETCH_SEARCH_FAILED);
         }
 
         return res.json();
@@ -51,11 +51,14 @@ export default function MedicineList({
 
       initialPageParam: 1,
       getNextPageParam: (lastPage) => {
-        const currentPage = lastPage?.body.pageNo || 1;
-        const itemsPerPage = lastPage?.body.numOfRows || 10;
-        const totalItems = lastPage?.body.totalCount || 0;
+        if (!lastPage?.body) return undefined;
+        const currentPage = parseInt(String(lastPage.body.pageNo), 10) || 1;
+        const numOfRows = parseInt(String(lastPage.body.numOfRows), 10) || 10;
+        const totalCount = parseInt(String(lastPage.body.totalCount), 10) || 0;
 
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        if (totalCount === 0 || numOfRows === 0) return undefined;
+
+        const totalPages = Math.ceil(totalCount / numOfRows);
         return currentPage < totalPages ? currentPage + 1 : undefined;
       },
 
@@ -76,30 +79,32 @@ export default function MedicineList({
     return data?.pages.flatMap((page) => page?.body.items ?? []) ?? [];
   }, [data]);
 
-  if (error) {
-    return <ErrorPopup error={error} />;
-  }
-
   return (
     <div className="divide-y divide-gray-100">
-      {medicines.length > 0
-        ? medicines.map((medicine) => (
-            <MedicineListItem key={medicine.itemSeq} medicine={medicine} />
-          ))
-        : !isFetching && (
-            <div className="py-12 text-center text-gray-500">
-              검색 결과가 없습니다.
-            </div>
-          )}
+      {medicines.map((medicine) => (
+        <MedicineListItem key={medicine.itemSeq} medicine={medicine} />
+      ))}
 
-      {isFetching && (
+      {error && (
+        <div className="col-span-full text-center text-red-500 py-4">
+          {error.message || FETCH_SEARCH_FAILED}
+        </div>
+      )}
+
+      {!isFetching && !error && medicines.length === 0 && (
+        <div className="py-12 text-center text-gray-500">
+          검색 결과가 없습니다.
+        </div>
+      )}
+
+      {isFetching && !error && (
         <div className="py-6 flex items-center justify-center">
           <LoadingSpinner />
         </div>
       )}
 
       {/* 무한 스크롤 트리거 엘리먼트 */}
-      {hasNextPage && <div ref={inViewRef}></div>}
+      {hasNextPage && !error && <div ref={inViewRef}></div>}
     </div>
   );
 }

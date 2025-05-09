@@ -52,7 +52,7 @@ export default function RecommendedMedicines({
         </div>
       </div>
 
-      <section className="py-8 bg-gray-50">
+      <section className="py-8 bg-gray-50 grow">
         <div className="max-w-4xl mx-auto px-5">
           {/* 탭 UI */}
           <div className="mb-6">

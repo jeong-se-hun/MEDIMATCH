@@ -24,8 +24,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   try {
     const { itemSeq } = await params;
-    const decodeItemSeq = decodeURIComponent(itemSeq);
-    const medicine = await getMedicineDetailBySeq(decodeItemSeq);
+    const medicine = await getMedicineDetailBySeq(itemSeq);
 
     if (!medicine) {
       return {
@@ -39,7 +38,7 @@ export async function generateMetadata({
 
     const ogImages = medicine.itemImage
       ? [medicine.itemImage]
-      : MEDICINE_PLACEHOLDER_IMAGE;
+      : [MEDICINE_PLACEHOLDER_IMAGE];
 
     return {
       title: title,
@@ -67,11 +66,10 @@ export default async function Medicine({
   params: Promise<MedicineParams>;
 }) {
   const { itemSeq } = await params;
-  const decodeItemSeq = decodeURIComponent(itemSeq);
 
   const [medicineResult, ingredientResult] = await Promise.all([
-    safeFetch(() => getMedicineDetailBySeq(decodeItemSeq)),
-    safeFetch(() => getMedicineIngredient(decodeItemSeq)),
+    safeFetch(() => getMedicineDetailBySeq(itemSeq)),
+    safeFetch(() => getMedicineIngredient(itemSeq)),
   ]);
 
   const { data: medicine, error: medicineFetchError } = medicineResult;
@@ -79,11 +77,11 @@ export default async function Medicine({
 
   if (medicineFetchError || !medicine) {
     const ERROR = medicineFetchError || new Error(MEDICINE_NOT_FOUND);
-    return <ErrorPopup error={ERROR} />;
+    return <ErrorPopup error={ERROR} shouldNavigateBack={true} />;
   }
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen flex flex-col">
       <div className="bg-white shadow-lg relative overflow-hidden">
         {/* 상단 요소 */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-primary to-blue-400"></div>
