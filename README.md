@@ -1,5 +1,5 @@
 
-[<img src="./public/images/logo.png" alt="MEDIMATCH 로고" width="30" style="vertical-align: middle; margin-right: 8px;"/> MEDIMATCH](https://medimatch-three.vercel.app)
+[MEDIMATCH](https://medimatch-three.vercel.app)
 
 # MEDIMATCH - 의약품 정보 검색 및 추천 서비스
 
