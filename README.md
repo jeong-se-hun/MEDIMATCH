@@ -1,3 +1,4 @@
+
 [<img src="./public/images/logo.png" alt="MEDIMATCH 로고" width="30" style="vertical-align: middle; margin-right: 8px;"/> MEDIMATCH](https://medimatch-three.vercel.app)
 
 # MEDIMATCH - 의약품 정보 검색 및 추천 서비스
@@ -26,3 +27,4 @@ MEDIMATCH는 공공데이터포털의 의약품 데이터를 활용하여 사용
 - **API:**
   - 공공데이터포털 - 식품의약품안전처\_의약품개요정보(e약은요)
   - 공공데이터포털 - 식품의약품안전처\_의약품 제품 허가정보
+
