@@ -27,7 +27,7 @@ export default function RecommendedByIngredient({
     isFetching,
     hasNextPage,
     error,
-  } = useInfiniteQuery<MedicinePermissionResponse | null, Error>({
+  } = useInfiniteQuery<MedicinePermissionResponse, Error>({
     queryKey: [
       "recommendedByIngredient",
       medicine.itemSeq,

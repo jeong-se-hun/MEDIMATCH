@@ -22,7 +22,7 @@ export default function RecommendedByEfficacy({
     isFetching,
     hasNextPage,
     error,
-  } = useInfiniteQuery<MedicineResponse | null, Error>({
+  } = useInfiniteQuery<MedicineResponse, Error>({
     queryKey: ["recommendedByEfficacy", medicine.itemSeq, medicine.efcyQesitm],
     queryFn: async ({ pageParam = 1 }) => {
       const params = new URLSearchParams({
