@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+
 import "./globals.css";
 import TanstackProvider from "@/providers/TanstackProvider";
 
@@ -24,6 +27,8 @@ export default function RootLayout({
     <html lang="ko">
       <body className={pretendard.className}>
         <TanstackProvider>{children}</TanstackProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
