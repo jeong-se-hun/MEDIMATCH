@@ -25,6 +25,7 @@ export default function SearchForm({
     <Form
       action="/search"
       className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100"
+      aria-label="검색 폼"
     >
       {/* 검색 타입 선택 라디오 버튼 그룹 */}
       <div className={BASE_RADIO_CONTAINER_CLASSES}>
