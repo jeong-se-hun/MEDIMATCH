@@ -1,5 +1,5 @@
-const DEFAULT_REVALIDATE = 86400; // 24 * 60 * 60 (1일 초 단위)
-const DEFAULT_CACHE: RequestCache = "force-cache";
+export const DEFAULT_REVALIDATE = 86400; // 24 * 60 * 60 (1일 초 단위)
+export const DEFAULT_CACHE: RequestCache = "force-cache";
 
 // API 요청을 위한 범용 fetch 래퍼
 export default async function fetchClient<T>(url: string): Promise<T> {
