@@ -3,7 +3,7 @@ import userEvent, { UserEvent } from "@testing-library/user-event";
 import SearchForm, { SearchType } from "./SearchForm";
 import { Mock, vi } from "vitest";
 
-describe("렌더링 테스트", () => {
+describe("SearchForm 렌더링 테스트", () => {
   test("기본 렌더링 확인", () => {
     render(<SearchForm defaultQuery="test" />);
     const medicineRadio = screen.getByRole("radio", { name: "약 이름" });
@@ -38,7 +38,7 @@ describe("렌더링 테스트", () => {
   });
 });
 
-describe("사용자 상호작용", () => {
+describe("SearchForm 사용자 상호작용", () => {
   test("라디오 버튼 클릭 시 상태 변경", async () => {
     const user = userEvent.setup();
     render(<SearchForm defaultSearchType={SearchType.MEDICINE} />);
@@ -70,7 +70,7 @@ describe("사용자 상호작용", () => {
   });
 });
 
-describe("폼 제출 테스트", () => {
+describe("SearchForm 폼 제출 테스트", () => {
   let user: UserEvent;
   let mockSubmit: Mock<(event: SubmitEvent) => void>;
 
