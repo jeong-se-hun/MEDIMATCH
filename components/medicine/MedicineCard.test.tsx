@@ -39,7 +39,7 @@ describe("MedicineCard 렌더링 테스트", () => {
   });
 
   test("itemImage prop이 제공되었을 때 해당 이미지가 렌더링되는지 확인", () => {
-    const customImage = "/path/to/custom-image.png";
+    const customImage = "/custom-image.png";
     render(<MedicineCard {...defaultProps} itemImage={customImage} />);
 
     const image = screen.getByAltText(defaultProps.itemName);
