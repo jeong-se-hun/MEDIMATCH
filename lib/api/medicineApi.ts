@@ -111,7 +111,10 @@ export async function getMedicineDetailBySeq(
       throw new Error(MEDICINE_NOT_FOUND);
     }
   } catch (error) {
-    console.error(`[getMedicineDetailBySeq] 의약품 상세 조회 중 오류 (itemSeq: ${itemSeq}):`, error);
+    console.error(
+      `[getMedicineDetailBySeq] 의약품 상세 조회 중 오류 (itemSeq: ${itemSeq}):`,
+      error
+    );
     if (error instanceof Error && error.message === MEDICINE_NOT_FOUND) {
       throw error;
     } else {
@@ -158,7 +161,10 @@ export async function getMedicineDetailByEfficacy({
       return null;
     }
   } catch (error) {
-    console.error("[getMedicineDetailByEfficacy] 동일 효능 의약품 조회 중 오류:", error);
+    console.error(
+      "[getMedicineDetailByEfficacy] 동일 효능 의약품 조회 중 오류:",
+      error
+    );
     throw new Error(FETCH_EFFICACY_FAILED);
   }
 }
@@ -193,7 +199,10 @@ export async function getMedicineIngredient(
       return null;
     }
   } catch (error) {
-    console.error(`[getMedicineIngredient] 의약품 주성분 조회 중 오류 (itemSeq: ${itemSeq}):`, error);
+    console.error(
+      `[getMedicineIngredient] 의약품 주성분 조회 중 오류 (itemSeq: ${itemSeq}):`,
+      error
+    );
     throw new Error(FETCH_MEDICINE_INGREDIENTS_FAILED);
   }
 }
@@ -233,7 +242,10 @@ export async function getMedicineListByIngredient({
     );
     return response;
   } catch (error) {
-    console.error("[getMedicineListByIngredient] 동일 성분 의약품 조회 중 오류:", error);
+    console.error(
+      "[getMedicineListByIngredient] 동일 성분 의약품 조회 중 오류:",
+      error
+    );
     throw new Error(FETCH_INGREDIENT_FAILED);
   }
 }
