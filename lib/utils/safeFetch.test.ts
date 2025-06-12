@@ -1,4 +1,4 @@
-import { describe, expect, vi } from "vitest";
+import { vi } from "vitest";
 import { safeFetch } from "./safeFetch";
 import { suppressConsoleError } from "@/test/utils/testUtils";
 import { GENERIC_ERROR_MESSAGE } from "@/lib/constants/errors";
