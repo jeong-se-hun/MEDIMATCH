@@ -63,4 +63,17 @@ describe("GET /api/efficacy", () => {
     expect(response.status).toBe(500);
     expect(data.message).toBe("API Error");
   });
+
+  test("pageNo가 유효하지 않은 값일 때 400 에러", async () => {
+    const request = mockRequest({
+      efcyQesitm: "두통",
+      pageNo: "-1",
+    });
+
+    const response = await GET(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(data).toEqual({ message: "pageNo는 1 이상의 숫자여야 합니다." });
+  });
 });
