@@ -64,9 +64,6 @@ describe("medicineApi", () => {
         intrcQesitm: "",
         seQesitm: "",
         depositMethodQesitm: "",
-        numOfRows: 0,
-        pageNo: 0,
-        totalCount: 0,
       };
 
       const mockResponse: MedicineResponse = {
@@ -119,9 +116,6 @@ describe("medicineApi", () => {
       const mockItem: MedicineItem = {
         itemSeq,
         itemName: "테스트약",
-        numOfRows: 0,
-        pageNo: 0,
-        totalCount: 0,
         entpName: "",
         efcyQesitm: "",
         useMethodQesitm: "",
@@ -188,9 +182,6 @@ describe("medicineApi", () => {
             {
               itemName: "게보린",
               efcyQesitm,
-              numOfRows: 0,
-              pageNo: 0,
-              totalCount: 0,
               entpName: "",
               itemSeq: "",
               useMethodQesitm: "",

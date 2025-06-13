@@ -28,9 +28,6 @@ describe("MedicineListItem 렌더링 테스트", () => {
     intrcQesitm: "테스트 상호작용",
     seQesitm: "테스트 부작용",
     depositMethodQesitm: "테스트 보관",
-    numOfRows: 0,
-    pageNo: 0,
-    totalCount: 0,
   };
 
   test("컴포넌트가 올바르게 렌더링되는지 확인", () => {
