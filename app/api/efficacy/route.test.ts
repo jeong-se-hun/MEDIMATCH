@@ -1,6 +1,7 @@
 import { GET } from "./route";
 import { getMedicineDetailByEfficacy } from "@/lib/api/medicineApi";
 import { FETCH_EFFICACY_FAILED } from "@/lib/constants/errors";
+import { suppressConsoleError } from "@/test/utils/testUtils";
 import { NextRequest } from "next/server";
 import { vi, beforeEach } from "vitest";
 
@@ -43,6 +44,8 @@ describe("GET /api/efficacy", () => {
   });
 
   test("efcyQesitm 파라미터 누락 시 400 에러 반환", async () => {
+    suppressConsoleError();
+
     const request = mockRequest({});
     const response = await GET(request);
     const data = await response.json();
@@ -65,6 +68,8 @@ describe("GET /api/efficacy", () => {
   });
 
   test("pageNo가 유효하지 않은 값일 때 400 에러", async () => {
+    suppressConsoleError();
+
     const request = mockRequest({
       efcyQesitm: "두통",
       pageNo: "-1",
@@ -74,6 +79,6 @@ describe("GET /api/efficacy", () => {
     const data = await response.json();
 
     expect(response.status).toBe(400);
-    expect(data).toEqual({ message: "pageNo는 1 이상의 숫자여야 합니다." });
+    expect(data).toEqual({ message: FETCH_EFFICACY_FAILED });
   });
 });

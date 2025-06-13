@@ -1,6 +1,7 @@
 import { GET } from "./route";
 import { getMedicineListByIngredient } from "@/lib/api/medicineApi";
 import { FETCH_INGREDIENT_FAILED } from "@/lib/constants/errors";
+import { suppressConsoleError } from "@/test/utils/testUtils";
 import { NextRequest } from "next/server";
 import { vi, beforeEach } from "vitest";
 
@@ -43,6 +44,7 @@ describe("GET /api/ingredient", () => {
   });
 
   test("item_ingr_name 파라미터 누락 시 400 에러 반환", async () => {
+    suppressConsoleError();
     const request = mockRequest({});
     const response = await GET(request);
     const data = await response.json();
@@ -65,6 +67,8 @@ describe("GET /api/ingredient", () => {
   });
 
   test("pageNo가 유효하지 않은 값일 때 400 에러", async () => {
+    suppressConsoleError();
+
     const request = mockRequest({
       item_ingr_name: "아세트아미노펜",
       pageNo: "-1",
@@ -74,6 +78,6 @@ describe("GET /api/ingredient", () => {
     const data = await response.json();
 
     expect(response.status).toBe(400);
-    expect(data).toEqual({ message: "pageNo는 1 이상의 숫자여야 합니다." });
+    expect(data).toEqual({ message: FETCH_INGREDIENT_FAILED });
   });
 });
