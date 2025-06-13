@@ -111,9 +111,6 @@ describe("MedicineList 컴포넌트", () => {
         intrcQesitm: "상호작용1",
         seQesitm: "부작용1",
         depositMethodQesitm: "보관1",
-        numOfRows: 0,
-        pageNo: 0,
-        totalCount: 0,
       };
       const mockData: MedicineResponse = {
         header: { resultCode: "00", resultMsg: "NORMAL SERVICE." },
@@ -160,9 +157,6 @@ describe("MedicineList 컴포넌트", () => {
         intrcQesitm: "상호작용1",
         seQesitm: "부작용1",
         depositMethodQesitm: "보관1",
-        numOfRows: 0,
-        pageNo: 0,
-        totalCount: 0,
       };
       const mockData: MedicineResponse = {
         header: { resultCode: "00", resultMsg: "NORMAL SERVICE." },
