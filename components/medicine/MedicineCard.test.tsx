@@ -1,7 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import MedicineCard from "./MedicineCard";
 import { MEDICINE_PLACEHOLDER_IMAGE } from "@/lib/constants/images";
-import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
 vi.mock("next/image", () => ({

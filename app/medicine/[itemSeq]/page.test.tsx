@@ -4,7 +4,6 @@ import {
   getMedicineDetailBySeq,
   getMedicineIngredient,
 } from "@/lib/api/medicineApi";
-import "@testing-library/jest-dom";
 import { Mock, vi } from "vitest";
 import { MEDICINE_NOT_FOUND } from "@/lib/constants/errors";
 
