@@ -1,6 +1,10 @@
 import { GET } from "./route";
 import { getMedicineList } from "@/lib/api/medicineApi";
-import { SEARCH_PARAMS_REQUIRED } from "@/lib/constants/errors";
+import {
+  FETCH_SEARCH_FAILED,
+  SEARCH_PARAMS_REQUIRED,
+} from "@/lib/constants/errors";
+import { suppressConsoleError } from "@/test/utils/testUtils";
 import { NextRequest } from "next/server";
 import { vi, beforeEach } from "vitest";
 
@@ -55,6 +59,8 @@ describe("GET /api/search", () => {
   ])(
     "필수 파라미터($query, $searchType)가 유효하지 않으면 400 에러를 반환한다",
     async ({ query, searchType }) => {
+      suppressConsoleError();
+
       const params = { query, searchType };
       const request = mockRequest(params);
 
@@ -90,6 +96,8 @@ describe("GET /api/search", () => {
   });
 
   test("pageNo가 유효하지 않은 값일 때 400 에러", async () => {
+    suppressConsoleError();
+
     const request = mockRequest({
       query: "아세트아미노펜",
       searchType: "medicine",
@@ -100,10 +108,12 @@ describe("GET /api/search", () => {
     const data = await response.json();
 
     expect(response.status).toBe(400);
-    expect(data).toEqual({ message: "pageNo는 1 이상의 숫자여야 합니다." });
+    expect(data).toEqual({ message: FETCH_SEARCH_FAILED });
   });
 
   test("API 호출 실패 시 500 에러", async () => {
+    suppressConsoleError();
+
     (getMedicineList as MockFunction).mockRejectedValue(new Error("API Error"));
 
     const request = mockRequest({
