@@ -1,8 +1,5 @@
 // 의약품 API의 개별 항목 타입 (medicineApi)
 export interface MedicineItem {
-  numOfRows: number; // 한 페이지 결과 수 (최대 3자리)
-  pageNo: number; // 페이지 번호 (최대 5자리)
-  totalCount: number; // 전체 결과 수 (최대 7자리)
   entpName: string; // 업체명 (최대 4000자)
   itemName: string; // 제품명 (최대 4000자)
   itemSeq: string; // 품목기준코드 (최대 4000자)
