@@ -1,7 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import SearchPage from "./page";
 import { SearchType } from "@/components/search/SearchForm";
-import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
 vi.mock("next/image", () => ({

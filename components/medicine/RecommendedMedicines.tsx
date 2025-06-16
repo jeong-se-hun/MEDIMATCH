@@ -4,7 +4,7 @@ import { useState } from "react";
 import RecommendedByIngredient from "@/components/medicine/RecommendedByIngredient";
 import RecommendedByEfficacy from "./RecommendedByEfficacy";
 
-type RecommendedMedicinesProps = {
+export type RecommendedMedicinesProps = {
   ingredient: IngredientItem | null;
   medicine: MedicineItem;
 };
