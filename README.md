@@ -20,10 +20,10 @@ MEDIMATCH는 공공데이터포털의 의약품 데이터를 활용하여 사용
 
 - **Frontend:**
   - Next.js (App Router)
-  - React
   - TypeScript
   - Tailwind CSS
   - React Query (TanStack Query)
+  - Vitest + React Testing Library
 - **API:**
   - 공공데이터포털 - 식품의약품안전처\_의약품개요정보(e약은요)
   - 공공데이터포털 - 식품의약품안전처\_의약품 제품 허가정보
